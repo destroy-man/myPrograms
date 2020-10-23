@@ -1,0 +1,24 @@
+[OPTIONS]
+Compatibility=1.1 or later
+Compiled file=HelpKursovaya2.chm
+Contents file=Оглавление.hhc
+Default Font=Verdana,12,204
+Default Window=Help
+Default topic=VvodRaboty.htm
+Display compile progress=No
+Language=0x419 Русский (Россия)
+Title=Помощь
+
+[WINDOWS]
+Help="Помощь","Оглавление.hhc","main.hhk",,,,,,,0x2020,,0x3006,,,,,,,,0
+
+
+[FILES]
+VvodRaboty.htm
+TablicaRabot.htm
+Grafik.htm
+Nepoladki.htm
+MainMenu.htm
+
+[INFOTYPES]
+
