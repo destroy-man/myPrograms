@@ -1,0 +1,10 @@
+class Summation{
+	private int sum;
+	<T extends Number> Summation(T arg){
+		for(int i=0;i<=arg.intValue();i++)
+			sum+=i;
+	}
+	int getSum(){
+		return sum;
+	}
+}
