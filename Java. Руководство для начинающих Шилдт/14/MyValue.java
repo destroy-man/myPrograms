@@ -1,0 +1,3 @@
+interface MyValue{
+	double getValue();
+}
