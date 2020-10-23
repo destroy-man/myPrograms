@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.EditActualAddressTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{bundle.EditActualAddressLabel_numActualAddress}" for="numActualAddress" />
+                    <h:inputText id="numActualAddress" value="#{actualAddressController.selected.numActualAddress}" title="#{bundle.EditActualAddressTitle_numActualAddress}" required="true" requiredMessage="#{bundle.EditActualAddressRequiredMessage_numActualAddress}"/>
+                    <h:outputLabel value="#{bundle.EditActualAddressLabel_address}" for="address" />
+                    <h:inputText id="address" value="#{actualAddressController.selected.address}" title="#{bundle.EditActualAddressTitle_address}" />
+                    <h:outputLabel value="#{bundle.EditActualAddressLabel_counteragentsNumConteragent}" for="counteragentsNumConteragent" />
+                    <h:selectOneMenu id="counteragentsNumConteragent" value="#{actualAddressController.selected.counteragentsNumConteragent}" title="#{bundle.EditActualAddressTitle_counteragentsNumConteragent}" required="true" requiredMessage="#{bundle.EditActualAddressRequiredMessage_counteragentsNumConteragent}">
+                        <f:selectItems value="#{counteragentsController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <h:commandLink action="#{actualAddressController.update}" value="#{bundle.EditActualAddressSaveLink}"/>
+                <br />
+                <br />
+                <h:link outcome="View" value="#{bundle.EditActualAddressViewLink}"/>
+                <br />
+                <h:commandLink action="#{actualAddressController.prepareList}" value="#{bundle.EditActualAddressShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{bundle.EditActualAddressIndexLink}" />
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>
