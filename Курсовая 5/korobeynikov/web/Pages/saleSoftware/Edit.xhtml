@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.EditSaleSoftwareTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{bundle.EditSaleSoftwareLabel_numSale}" for="numSale" />
+                    <h:inputText id="numSale" value="#{saleSoftwareController.selected.numSale}" title="#{bundle.EditSaleSoftwareTitle_numSale}" required="true" requiredMessage="#{bundle.EditSaleSoftwareRequiredMessage_numSale}"/>
+                    <h:outputLabel value="#{bundle.EditSaleSoftwareLabel_dateSale}" for="dateSale" />
+                    <h:inputText id="dateSale" value="#{saleSoftwareController.selected.dateSale}" title="#{bundle.EditSaleSoftwareTitle_dateSale}" >
+                        <f:convertDateTime pattern="MM/dd/yyyy" />
+                    </h:inputText>
+                    <h:outputLabel value="#{bundle.EditSaleSoftwareLabel_price}" for="price" />
+                    <h:inputText id="price" value="#{saleSoftwareController.selected.price}" title="#{bundle.EditSaleSoftwareTitle_price}" />
+                    <h:outputLabel value="#{bundle.EditSaleSoftwareLabel_count}" for="count" />
+                    <h:inputText id="count" value="#{saleSoftwareController.selected.count}" title="#{bundle.EditSaleSoftwareTitle_count}" />
+                    <h:outputLabel value="#{bundle.EditSaleSoftwareLabel_softwareNumSoftware}" for="softwareNumSoftware" />
+                    <h:selectOneMenu id="softwareNumSoftware" value="#{saleSoftwareController.selected.softwareNumSoftware}" title="#{bundle.EditSaleSoftwareTitle_softwareNumSoftware}" required="true" requiredMessage="#{bundle.EditSaleSoftwareRequiredMessage_softwareNumSoftware}">
+                        <f:selectItems value="#{softwareController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <h:commandLink action="#{saleSoftwareController.update}" value="#{bundle.EditSaleSoftwareSaveLink}"/>
+                <br />
+                <br />
+                <h:link outcome="View" value="#{bundle.EditSaleSoftwareViewLink}"/>
+                <br />
+                <h:commandLink action="#{saleSoftwareController.prepareList}" value="#{bundle.EditSaleSoftwareShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{bundle.EditSaleSoftwareIndexLink}" />
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

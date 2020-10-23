@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ViewSaleSoftwareTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{bundle.ViewSaleSoftwareLabel_numSale}"/>
+                    <h:outputText value="#{saleSoftwareController.selected.numSale}" title="#{bundle.ViewSaleSoftwareTitle_numSale}"/>
+                    <h:outputText value="#{bundle.ViewSaleSoftwareLabel_dateSale}"/>
+                    <h:outputText value="#{saleSoftwareController.selected.dateSale}" title="#{bundle.ViewSaleSoftwareTitle_dateSale}">
+                        <f:convertDateTime pattern="MM/dd/yyyy" />
+                    </h:outputText>
+                    <h:outputText value="#{bundle.ViewSaleSoftwareLabel_price}"/>
+                    <h:outputText value="#{saleSoftwareController.selected.price}" title="#{bundle.ViewSaleSoftwareTitle_price}"/>
+                    <h:outputText value="#{bundle.ViewSaleSoftwareLabel_count}"/>
+                    <h:outputText value="#{saleSoftwareController.selected.count}" title="#{bundle.ViewSaleSoftwareTitle_count}"/>
+                    <h:outputText value="#{bundle.ViewSaleSoftwareLabel_softwareNumSoftware}"/>
+                    <h:outputText value="#{saleSoftwareController.selected.softwareNumSoftware}" title="#{bundle.ViewSaleSoftwareTitle_softwareNumSoftware}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{saleSoftwareController.destroyAndView}" value="#{bundle.ViewSaleSoftwareDestroyLink}"/>
+                <br />
+                <br />
+                <h:link outcome="Edit" value="#{bundle.ViewSaleSoftwareEditLink}"/>
+                <br />
+                <h:commandLink action="#{saleSoftwareController.prepareCreate}" value="#{bundle.ViewSaleSoftwareCreateLink}" />
+                <br />
+                <h:commandLink action="#{saleSoftwareController.prepareList}" value="#{bundle.ViewSaleSoftwareShowAllLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{bundle.ViewSaleSoftwareIndexLink}"/>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

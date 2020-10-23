@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.EditVenderTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{bundle.EditVenderLabel_numVender}" for="numVender" />
+                    <h:inputText id="numVender" value="#{venderController.selected.numVender}" title="#{bundle.EditVenderTitle_numVender}" required="true" requiredMessage="#{bundle.EditVenderRequiredMessage_numVender}"/>
+                    <h:outputLabel value="#{bundle.EditVenderLabel_name}" for="name" />
+                    <h:inputText id="name" value="#{venderController.selected.name}" title="#{bundle.EditVenderTitle_name}" required="true" requiredMessage="#{bundle.EditVenderRequiredMessage_name}"/>
+                    <h:outputLabel value="#{bundle.EditVenderLabel_country}" for="country" />
+                    <h:inputText id="country" value="#{venderController.selected.country}" title="#{bundle.EditVenderTitle_country}" />
+                    <h:outputLabel value="#{bundle.EditVenderLabel_site}" for="site" />
+                    <h:inputText id="site" value="#{venderController.selected.site}" title="#{bundle.EditVenderTitle_site}" />
+                    <h:outputLabel value="#{bundle.EditVenderLabel_mail}" for="mail" />
+                    <h:inputText id="mail" value="#{venderController.selected.mail}" title="#{bundle.EditVenderTitle_mail}" />
+                </h:panelGrid>
+                <h:commandLink action="#{venderController.update}" value="#{bundle.EditVenderSaveLink}"/>
+                <br />
+                <br />
+                <h:link outcome="View" value="#{bundle.EditVenderViewLink}"/>
+                <br />
+                <h:commandLink action="#{venderController.prepareList}" value="#{bundle.EditVenderShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{bundle.EditVenderIndexLink}" />
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

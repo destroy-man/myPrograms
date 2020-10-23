@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      >
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;
+              charset=UTF-8"/>
+        <title>TODO supply a title</title>
+    </head>
+    <body>
+        <h:form>
+            <h1><h:outputText value="Задайте цену"/></h1>
+            <h:panelGrid columns="2">
+                <h:outputLabel value="От:" for="idMin" />
+                <h:inputText id="idMin"
+                             value="#{SaleSoftwareController.priceMin}" title="idMin"/>
+                <h:outputLabel value="До:" for="idMax" />
+                <h:inputText id="idMax"
+                             value="#{SaleSoftwareController.priceMax}" title="idMax"/>
+            </h:panelGrid>
+            <h:commandButton
+                action="#{SaleSoftwareController.queryPrice_yes}"
+                value="Принять" />
+            <h:commandButton action="saleSoftware"
+                             value="Отменить" />
+        </h:form>
+    </body>
+</html>
