@@ -18,7 +18,7 @@ public class DBGames extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table Games (id integer primary key autoincrement, name text, rating integer, year integer);");
+        db.execSQL("create table Games (id integer primary key autoincrement, name text, rating integer, year integer, genre integer);");
         Toast.makeText(mainActivity,"База данных успешно создана!",Toast.LENGTH_LONG).show();
     }
 

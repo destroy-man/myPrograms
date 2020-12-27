@@ -5,19 +5,24 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.ContentValues;
-import android.content.Context;
+import android.content.DialogInterface;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +32,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText yearGame;
     private TextView showGamesText;
     private DBGames dbGames;
+    private Spinner genreGame;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -51,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
                     File gamesFile = new File(directory.getPath() + "/games.txt");
                     try{
                         StringBuilder games=new StringBuilder();
-                        readDB(games,null,null);
+                        readDB(games,null,null,null);
                         BufferedWriter writer = new BufferedWriter(new FileWriter(gamesFile));
                         for(String game:games.toString().split("\n")) {
                             writer.write(game);
@@ -72,17 +80,20 @@ public class MainActivity extends AppCompatActivity {
                     File gamesFile = new File(directory.getPath() + "/games.txt");
                     try{
                         boolean haveGames=false;
-                        StringBuilder games=new StringBuilder();
                         BufferedReader reader=new BufferedReader(new FileReader(gamesFile));
                         String line;
                         while((line=reader.readLine())!=null){
-                            if(!haveGames)haveGames=true;
                             ContentValues cv=new ContentValues();
                             SQLiteDatabase db=dbGames.getWritableDatabase();
-                            cv.put("name",line.split(";")[0]);
-                            cv.put("rating",line.split(";")[1]);
-                            cv.put("year",line.split(";")[2]);
-                            db.insert("Games",null,cv);
+                            if(!isGameExist(line.split(";")[0],line.split(";")[2],db)){
+                                cv.put("name", line.split(";")[0]);
+                                cv.put("rating", line.split(";")[1]);
+                                cv.put("year", line.split(";")[2]);
+                                cv.put("genre",line.split(";")[3]);
+                                db.insert("Games", null, cv);
+                                if (!haveGames) haveGames = true;
+                            }
+                            db.close();
                         }
                         if(haveGames)
                             Toast.makeText(mainActivity,"Игры из файла успешно загружены!",Toast.LENGTH_SHORT).show();
@@ -106,25 +117,40 @@ public class MainActivity extends AppCompatActivity {
         String ratingGameText=ratingGame.getText().toString();
         String yearGameText=yearGame.getText().toString();
         String selection=null;
+        String[] selectionArgs=null;
         StringBuilder textSelect=new StringBuilder();
-        if(!nameGameText.isEmpty())
-            textSelect.append("name LIKE '%" + nameGameText + "%' AND ");
-        if(!ratingGameText.isEmpty())
-            textSelect.append("rating='"+ratingGameText+"' AND ");
-        if(!yearGameText.isEmpty())
-            textSelect.append("year='"+yearGameText+"'");
+        List<String> args=new ArrayList<String>();
+        if(!nameGameText.isEmpty()) {
+            textSelect.append("name LIKE ? AND ");
+            args.add("%"+nameGameText+"%");
+        }
+        if(!ratingGameText.isEmpty()) {
+            textSelect.append("rating=? AND ");
+            args.add(ratingGameText);
+        }
+        if(!yearGameText.isEmpty()) {
+            textSelect.append("year=? AND ");
+            args.add(yearGameText);
+        }
+        if(genreGame.getSelectedItemId()>0){
+            textSelect.append("genre=?");
+            args.add(""+genreGame.getSelectedItemId());
+        }
 
         if(!textSelect.toString().isEmpty()) {
             if (textSelect.toString().substring(textSelect.toString().length() - 5).equals(" AND "))
                 textSelect.setLength(textSelect.toString().length() - 5);
             selection=textSelect.toString();
+            selectionArgs=new String[args.size()];
+            for(int i=0;i<args.size();i++)
+                selectionArgs[i]=args.get(i);
         }
 
         String order=null;
-        if(isOrder)order="rating desc,year desc,id asc,name asc";
+        if(isOrder)order="rating desc,genre asc,year desc,id asc,name asc";
 
         StringBuilder games=new StringBuilder();
-        readDB(games,selection,order);
+        readDB(games,selection,selectionArgs,order);
         if(!games.toString().isEmpty()){
             StringBuilder resultGames = new StringBuilder();
             for (String game : games.toString().split("\n")) {
@@ -137,26 +163,93 @@ public class MainActivity extends AppCompatActivity {
             showGamesText.setText("");
     }
 
-    public void readDB(StringBuilder games,String selection,String order){
+    public void readDB(StringBuilder games,String selection,String[] selectionArgs,String order){
         SQLiteDatabase db=dbGames.getWritableDatabase();
-        Cursor c = db.query("Games", null, selection, null, null, null, order);
+        Cursor c = db.query("Games", null, selection, selectionArgs, null, null, order);
         if (c.moveToFirst()) {
-            int nameColIndex = c.getColumnIndex("name");
-            int ratingColIndex = c.getColumnIndex("rating");
+            int nameColIndex=c.getColumnIndex("name");
+            int ratingColIndex=c.getColumnIndex("rating");
             int yearColIndex=c.getColumnIndex("year");
+            int genreColIndex=c.getColumnIndex("genre");
             do {
-                games.append(c.getString(nameColIndex)+";"+c.getInt(ratingColIndex)+";"+c.getInt(yearColIndex)+"\n");
+                games.append(c.getString(nameColIndex)+";"+c.getInt(ratingColIndex)+";"+c.getInt(yearColIndex)+";"+c.getInt(genreColIndex)+"\n");
             } while (c.moveToNext());
         }
         else
             Toast.makeText(mainActivity,"Нет сохраненных игр!",Toast.LENGTH_LONG).show();
         c.close();
+        db.close();
+    }
+
+    public boolean isGameExist(String nameGameText,String yearGameText,SQLiteDatabase db){
+        String selection="name=? AND year=?";
+        String[] selectionArgs={nameGameText,yearGameText};
+        Cursor c = db.query("Games", null, selection, selectionArgs, null, null, null);
+        if(c.moveToFirst()){
+            Toast.makeText(mainActivity,"В базе уже есть данная игра!",Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        else
+            return false;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(0, 1, 0, "Очистить поля");
+        menu.add(0, 2, 0, "Удалить все игры");
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId()==1){
+            if(nameGame==null)nameGame=findViewById(R.id.nameGameText);
+            if(ratingGame==null)ratingGame=findViewById(R.id.ratingGameText);
+            if(yearGame==null)yearGame=findViewById(R.id.yearGameText);
+            nameGame.setText("");
+            ratingGame.setText("");
+            yearGame.setText("");
+            genreGame.setSelection(0);
+        }
+        if(item.getItemId()==2){
+            //
+            LayoutInflater li=LayoutInflater.from(mainActivity);
+            View deleteAllGamesView=li.inflate(R.layout.delete_all_games,null);
+            AlertDialog.Builder deleteAllGamesDialogBuilder=new AlertDialog.Builder(mainActivity);
+            deleteAllGamesDialogBuilder.setView(deleteAllGamesView);
+            deleteAllGamesDialogBuilder.setCancelable(false).setPositiveButton("Нет",new DialogInterface.OnClickListener(){
+                public void onClick(DialogInterface dialog,int id){
+                    dialog.cancel();
+                }
+            }).setNegativeButton("Да", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    SQLiteDatabase db=dbGames.getWritableDatabase();
+                    int delCount=db.delete("Games",null,null);
+                    if(delCount>0)
+                        Toast.makeText(mainActivity,"Успешно удалены все игры!",Toast.LENGTH_SHORT).show();
+                    else
+                        Toast.makeText(mainActivity,"Нет сохраненных игр!",Toast.LENGTH_SHORT).show();
+                    db.close();
+                }
+            });
+            AlertDialog alertDialog=deleteAllGamesDialogBuilder.create();
+            alertDialog.show();
+            //
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        String[] genres={"-","FPS","TPS","Slasher","Stealth","RTS","TBS","ARPG","CRPG","Arcade","Adventure","Other"};
+        genreGame=findViewById(R.id.genreGameList);
+        ArrayAdapter<String> adapterGenres=new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,genres);
+        adapterGenres.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        genreGame.setAdapter(adapterGenres);
 
         mainActivity=this;
         nameGame=findViewById(R.id.nameGameText);
@@ -170,18 +263,22 @@ public class MainActivity extends AppCompatActivity {
                 String nameGameText=nameGame.getText().toString();
                 String ratingGameText=ratingGame.getText().toString();
                 String yearGameText=yearGame.getText().toString();
-                if(nameGameText.isEmpty() || ratingGameText.isEmpty() || yearGameText.isEmpty())
-                    Toast.makeText(mainActivity,"Для добавления игры необходимо заполнить поля Название, Оценка и Год!",Toast.LENGTH_LONG).show();
+                if(nameGameText.isEmpty() || ratingGameText.isEmpty() || yearGameText.isEmpty() || genreGame.getSelectedItemId()==0)
+                    Toast.makeText(mainActivity,"Для добавления игры необходимо заполнить поля Название, Оценка, Год и указать Жанр!",Toast.LENGTH_LONG).show();
                 else if(Integer.parseInt(ratingGameText)<1 || Integer.parseInt(ratingGameText)>10)
                     Toast.makeText(mainActivity,"Некорректно указана оценка. Оценка должна принимать значение в интервале от 1 до 10.",Toast.LENGTH_LONG).show();
                 else{
                     ContentValues cv=new ContentValues();
                     SQLiteDatabase db=dbGames.getWritableDatabase();
-                    cv.put("name",nameGameText);
-                    cv.put("rating",ratingGameText);
-                    cv.put("year",yearGameText);
-                    db.insert("Games",null,cv);
-                    Toast.makeText(mainActivity,"Игра успешно добавлена!",Toast.LENGTH_SHORT).show();
+                    if(!isGameExist(nameGameText,yearGameText,db)) {
+                        cv.put("name", nameGameText);
+                        cv.put("rating", ratingGameText);
+                        cv.put("year", yearGameText);
+                        cv.put("genre",""+genreGame.getSelectedItemId());
+                        db.insert("Games", null, cv);
+                        Toast.makeText(mainActivity, "Игра успешно добавлена!", Toast.LENGTH_SHORT).show();
+                    }
+                    db.close();
                 }
             }
         });
@@ -207,6 +304,8 @@ public class MainActivity extends AppCompatActivity {
                         else
                             cv.put("rating", ratingGameText);
                     }
+                    if(genreGame.getSelectedItemId()>0)
+                        cv.put("genre",""+genreGame.getSelectedItemId());
                     if (!incorrectRating) {
                         int updCount=0;
 
@@ -218,6 +317,7 @@ public class MainActivity extends AppCompatActivity {
                         else
                             Toast.makeText(mainActivity,"Данная игра не найдена!",Toast.LENGTH_SHORT).show();
                     }
+                    db.close();
                 }
             }
         });
@@ -232,11 +332,6 @@ public class MainActivity extends AppCompatActivity {
                 int delCount=0;
                 if(nameGameText.isEmpty())
                     Toast.makeText(mainActivity,"Для удаления игры необходимо заполнить поле Название!",Toast.LENGTH_LONG).show();
-//                    delCount=db.delete("Games",null,null);
-//                    if(delCount>0)
-//                        Toast.makeText(mainActivity,"Успешно удалены все игры!",Toast.LENGTH_SHORT).show();
-//                    else
-//                        Toast.makeText(mainActivity,"Нет сохраненных игр!",Toast.LENGTH_SHORT).show();
                 else{
                     if(yearGameText.isEmpty())delCount=db.delete("Games","name='"+nameGameText+"'",null);
                     else delCount=db.delete("Games","name='"+nameGameText+"' AND year='"+yearGameText+"'",null);
@@ -246,6 +341,7 @@ public class MainActivity extends AppCompatActivity {
                     else
                         Toast.makeText(mainActivity,"Данная игра не найдена!",Toast.LENGTH_SHORT).show();
                 }
+                db.close();
             }
         });
         //Сохранить игры в файл
