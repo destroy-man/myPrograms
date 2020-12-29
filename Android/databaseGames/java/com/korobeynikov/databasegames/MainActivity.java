@@ -60,13 +60,17 @@ public class MainActivity extends AppCompatActivity {
                     try{
                         StringBuilder games=new StringBuilder();
                         readDB(games,null,null,null);
-                        BufferedWriter writer = new BufferedWriter(new FileWriter(gamesFile));
-                        for(String game:games.toString().split("\n")) {
-                            writer.write(game);
-                            writer.newLine();
+                        if(!games.toString().isEmpty()) {
+                            BufferedWriter writer = new BufferedWriter(new FileWriter(gamesFile));
+                            for (String game : games.toString().split("\n")) {
+                                writer.write(game);
+                                writer.newLine();
+                            }
+                            writer.close();
+                            Toast.makeText(mainActivity,"Cохранение в файл успешно завершено!",Toast.LENGTH_LONG).show();
                         }
-                        writer.close();
-                        Toast.makeText(mainActivity,"Cохранение в файл успешно завершено!",Toast.LENGTH_LONG).show();
+                        else
+                            Toast.makeText(mainActivity,"В базе данных нет записей!",Toast.LENGTH_LONG).show();
                     }
                     catch(IOException ex){
                         Toast.makeText(mainActivity,"Произошла ошибка при сохранении в файл!",Toast.LENGTH_LONG).show();
