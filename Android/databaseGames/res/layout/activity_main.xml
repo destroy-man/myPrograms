@@ -167,11 +167,17 @@
             android:scrollbars="vertical"
             android:fillViewport="true">
 
-            <TextView
-                android:id="@+id/showGamesText"
+            <HorizontalScrollView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1" />
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/showGamesText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1" />
+
+            </HorizontalScrollView>
         </ScrollView>
     </LinearLayout>
 

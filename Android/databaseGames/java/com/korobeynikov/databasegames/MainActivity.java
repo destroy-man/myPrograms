@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         String order=null;
-        if(isOrder)order="rating desc,genre asc,year desc,id asc,name asc";
+        if(isOrder)order="rating desc,genre asc,year desc,id desc";
 
         StringBuilder games=new StringBuilder();
         readDB(games,selection,selectionArgs,order);
