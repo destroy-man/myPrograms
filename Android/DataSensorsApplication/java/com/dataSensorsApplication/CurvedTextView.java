@@ -1,3 +1,5 @@
+package com.cameraApplication;
+
 import android.annotation.SuppressLint;
 import android.content.*;
 import android.graphics.Canvas;

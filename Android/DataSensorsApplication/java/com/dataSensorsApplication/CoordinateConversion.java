@@ -1,3 +1,5 @@
+package com.cameraApplication;
+
 import java.util.Hashtable;
 import java.util.Map;
 

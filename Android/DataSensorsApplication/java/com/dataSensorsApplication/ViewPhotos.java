@@ -1,3 +1,5 @@
+package com.cameraApplication;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;

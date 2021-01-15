@@ -1,3 +1,5 @@
+package com.cameraApplication;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -1119,6 +1121,38 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
+        setContentView(R.layout.activity_main);
+
+        final ImageView projectionNorth=findViewById(R.id.projectionNorth);
+        projectionNorth.setVisibility(View.INVISIBLE);
+
+        final ImageView centerPoint=findViewById(R.id.centerPoint);
+        ViewTreeObserver vto = centerPoint.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
+                    centerPoint.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                else
+                    centerPoint.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+                float[] coordsCenter=new float[2];
+                coordsCenter[0]=centerPoint.getX();
+                coordsCenter[1]=centerPoint.getY();
+                curveTextView.coordsCenter=coordsCenter;
+
+                ImageView rollLine=findViewById(R.id.rollLine);
+                curveTextView.coordsRollLine=new int[]{rollLine.getLeft(),rollLine.getRight(),rollLine.getTop()};
+                ImageView azimuthLine=findViewById(R.id.compasLine);
+                curveTextView.coordsAzimuthLine=new int[]{azimuthLine.getRight(),azimuthLine.getTop(),azimuthLine.getBottom()};
+                ImageView pitchLine=findViewById(R.id.pitchLine);
+                curveTextView.coordsPitchLine=new int[]{pitchLine.getLeft(),pitchLine.getRight(),pitchLine.getTop()};
+
+                projectionNorth.setPivotX(coordsCenter[0]);
+                projectionNorth.setPivotY(coordsCenter[1]);
+            }
+        });
+
         mSettings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
 
         //Инициализация массивов датчиков
@@ -1583,7 +1617,7 @@ public class MainActivity extends Activity {
     }
     //
 
-    //Получение имен файлов снимка в папке locator camera
+    //Получение имен файлов снимка в папке Data sensors
     public void fillingListFiles(){
         File[] files=directory.listFiles();
         if(files!=null){
@@ -1599,42 +1633,40 @@ public class MainActivity extends Activity {
     //
 
     public void startCamera(){
-        setContentView(R.layout.activity_main);
-
         //
         curveTextView=findViewById(R.id.textView);
         for(int i=0;i<9;i++)
             getCoordsTextPitch(i);
 
-        final ImageView projectionNorth=findViewById(R.id.projectionNorth);
-        projectionNorth.setVisibility(View.INVISIBLE);
+//        final ImageView projectionNorth=findViewById(R.id.projectionNorth);
+//        projectionNorth.setVisibility(View.INVISIBLE);
 
-        final ImageView centerPoint=findViewById(R.id.centerPoint);
-        ViewTreeObserver vto = centerPoint.getViewTreeObserver();
-        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
-                    centerPoint.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                else
-                    centerPoint.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-
-                float[] coordsCenter=new float[2];
-                coordsCenter[0]=centerPoint.getX();
-                coordsCenter[1]=centerPoint.getY();
-                curveTextView.coordsCenter=coordsCenter;
-
-                ImageView rollLine=findViewById(R.id.rollLine);
-                curveTextView.coordsRollLine=new int[]{rollLine.getLeft(),rollLine.getRight(),rollLine.getTop()};
-                ImageView azimuthLine=findViewById(R.id.compasLine);
-                curveTextView.coordsAzimuthLine=new int[]{azimuthLine.getRight(),azimuthLine.getTop(),azimuthLine.getBottom()};
-                ImageView pitchLine=findViewById(R.id.pitchLine);
-                curveTextView.coordsPitchLine=new int[]{pitchLine.getLeft(),pitchLine.getRight(),pitchLine.getTop()};
-
-                projectionNorth.setPivotX(coordsCenter[0]);
-                projectionNorth.setPivotY(coordsCenter[1]);
-            }
-        });
+//        final ImageView centerPoint=findViewById(R.id.centerPoint);
+//        ViewTreeObserver vto = centerPoint.getViewTreeObserver();
+//        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//            @Override
+//            public void onGlobalLayout() {
+//                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
+//                    centerPoint.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+//                else
+//                    centerPoint.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+//
+//                float[] coordsCenter=new float[2];
+//                coordsCenter[0]=centerPoint.getX();
+//                coordsCenter[1]=centerPoint.getY();
+//                curveTextView.coordsCenter=coordsCenter;
+//
+//                ImageView rollLine=findViewById(R.id.rollLine);
+//                curveTextView.coordsRollLine=new int[]{rollLine.getLeft(),rollLine.getRight(),rollLine.getTop()};
+//                ImageView azimuthLine=findViewById(R.id.compasLine);
+//                curveTextView.coordsAzimuthLine=new int[]{azimuthLine.getRight(),azimuthLine.getTop(),azimuthLine.getBottom()};
+//                ImageView pitchLine=findViewById(R.id.pitchLine);
+//                curveTextView.coordsPitchLine=new int[]{pitchLine.getLeft(),pitchLine.getRight(),pitchLine.getTop()};
+//
+//                projectionNorth.setPivotX(coordsCenter[0]);
+//                projectionNorth.setPivotY(coordsCenter[1]);
+//            }
+//        });
 
         final TextView textRoll=findViewById(R.id.textRoll);
         ViewTreeObserver vto1 = textRoll.getViewTreeObserver();
@@ -1655,7 +1687,7 @@ public class MainActivity extends Activity {
         });
 
         final TextView textCompas=findViewById(R.id.textCompas);
-        vto = textCompas.getViewTreeObserver();
+        ViewTreeObserver vto = textCompas.getViewTreeObserver();
         vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -1709,11 +1741,11 @@ public class MainActivity extends Activity {
         if (!mskFile.exists()){
             try {
                 String text="Пусто, 0, 0, 0, 0\n"
-                        +"МСК-1, 1500000, -5911057.63, 0, 0\n"
-                        +"МСК-2, 2500000, -5911057.63, 0, 0\n"
-                        +"МСК-3, 1500000, -5911057.63, 0, 0\n"
-                        +"МСК-4, 2500000, -5911057.63, 0, 0\n"
-                        +"МСК-5, 3500000, -5911057.63, 0, 0";
+                        +"МСК-66(6-1), 1500000, -5911057.63, 0, 0\n"
+                        +"МСК-66(6-2), 2500000, -5911057.63, 0, 0\n"
+                        +"МСК-66(3-1), 1500000, -5911057.63, 0, 0\n"
+                        +"МСК-66(3-2), 2500000, -5911057.63, 0, 0\n"
+                        +"МСК-66(3-3), 3500000, -5911057.63, 0, 0";
                 BufferedWriter writer = new BufferedWriter(new FileWriter(mskFile));
                 writer.write(text);
                 writer.close();

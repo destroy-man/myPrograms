@@ -1,3 +1,4 @@
+package com.cameraApplication;
 class Deg2UTM {
     double easting;
     double northing;
