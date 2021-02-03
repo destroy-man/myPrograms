@@ -32,25 +32,6 @@ public class MainActivity extends AppCompatActivity {
         // get textview from our layout.xml
         final TextView rssURLTV = (TextView) findViewById(R.id.rssURL);
 
-        // get button from layout.xml
-        Button fetchRss = (Button) findViewById(R.id.fetchRss);
-
-        // define the action that will be executed when the button is clicked.
-        fetchRss.setOnClickListener(new View.OnClickListener() {
-
-            //@Override
-            public void onClick(View v) {
-                feedUrl = rssURLTV.getText().toString();
-                //TextView TVtitle=(TextView)findViewById(R.id.label);
-                //CharSequence cs="fetching";
-                //TVtitle.setText(cs);
-                aa.notifyDataSetChanged();
-                refressRssList();
-                //cs="Feed:";
-                //TVtitle.setText(cs);
-            }
-        });
-
         // get the listview from layout.xml
         rssListView = (ListView) findViewById(R.id.rssListView);
         // here we specify what to execute when individual list items clicked

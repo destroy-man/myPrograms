@@ -109,8 +109,6 @@ public class RssItem {
                                                           _pubDate, _link);
 
                             rssItems.add(rssItem);
-                            if(rssItems.size()==10)
-                                break;
                         }
                     }
 
