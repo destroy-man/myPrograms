@@ -52,7 +52,7 @@ public class RssItem {
         return result;
     }
 
-    static class GroupConnection extends AsyncTask< String, Void, String > {
+    static class RssConnection extends AsyncTask< String, Void, String > {
 
         @Override
         protected String doInBackground(String... args) {
@@ -130,7 +130,7 @@ public class RssItem {
         rssItems = new ArrayList<RssItem>();
         try {
             hasRss=false;
-            new GroupConnection().execute(feedUrl);
+            new RssConnection().execute(feedUrl);
         } catch (Exception e) {
             e.printStackTrace();
         }

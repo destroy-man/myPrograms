@@ -1,15 +1,10 @@
 package com.korobeynikov.rssnews;
 import android.app.Activity;
 import android.os.Bundle;
+import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.*;
-import java.util.*;
-import java.text.*;
-import java.net.*;
-import java.io.*;
-import javax.xml.parsers.*;
-import org.w3c.dom.*;
-import android.view.*;
 public class RssItemDisplayer extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -20,20 +15,16 @@ public class RssItemDisplayer extends Activity {
 
         WebView wb=findViewById(R.id.wbRss);
         wb.loadUrl(selectedRssItem.getLink());
-        //Bundle extras = getIntent().getExtras();
-//        TextView titleTv = (TextView)findViewById(R.id.titleTextView);
-//        TextView contentTv = (TextView)findViewById(R.id.contentTextView);
-//
-//        String title = "";
-//        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd - hh:mm:ss");
-//        title = "\n" + selectedRssItem.getTitle() + "  ( "
-//                + sdf.format(selectedRssItem.getPubDate()) + " )\n\n";
-//
-//        String content = "";
-//        content += selectedRssItem.getDescription() + "\n"
-//                + selectedRssItem.getLink();
-//
-//        titleTv.setText(title);
-//        contentTv.setText(content);
+
+        wb.setWebViewClient(new WebViewClient(){
+            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                //Users will be notified in case there an error (i.e. no internet connection)
+                Toast.makeText(RssItemDisplayer.this, "Oh no! " + description, Toast.LENGTH_SHORT).show();
+            }
+
+            public void onPageFinished(WebView view, String url) {
+                CookieSyncManager.getInstance().sync();
+            }
+        });
     }
 }
