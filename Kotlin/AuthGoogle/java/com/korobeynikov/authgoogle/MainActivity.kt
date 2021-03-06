@@ -1,17 +1,24 @@
 package com.korobeynikov.authgoogle
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
+import android.os.CountDownTimer
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.addTextChangedListener
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.squareup.picasso.Picasso
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 
 class MainActivity : AppCompatActivity() {
@@ -22,6 +29,40 @@ class MainActivity : AppCompatActivity() {
         FirebaseAuth.getInstance()
     }
 
+    fun getGithubUsers(name:String,numPage:Int,adapter:ArrayAdapter<String>,buttonNext:Button,textNumPage:TextView){
+        adapter.clear()
+        val repository = SearchRepositoryProvider.provideSearchRepository()
+        repository.searchUsers(name,numPage)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe ({
+                    result ->
+                    for(i in 0..result.items.size-1)
+                        adapter.add(result.items[i].login+": "+result.items[i].html_url)
+
+                    if(adapter.count>0) {
+                        textNumPage.setText("Номер страницы: " + numPage+". Всего пользователей: "+result.total_count+".")
+                        var countPages=0;
+                        if(result.total_count%30==0)
+                            countPages = result.total_count / 30
+                        else
+                            countPages = result.total_count / 30+1
+
+                        if(numPage==countPages)
+                            buttonNext.isEnabled=false
+                        else
+                            buttonNext.isEnabled=true
+                    }
+                    else {
+                        textNumPage.setText("Поиск не дал результатов!")
+                        buttonNext.isEnabled=false
+                    }
+                }, { error ->
+                    error.printStackTrace()
+                })
+    }
+
+    @SuppressLint("WrongViewCast")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -41,13 +82,89 @@ class MainActivity : AppCompatActivity() {
         val viewUser=findViewById<ImageView>(R.id.viewUser)
         Picasso.with(this).load(user?.photoUrl).into(viewUser)
 
-        val logout=findViewById<Button>(R.id.logout)
-        logout.setOnClickListener {
-            mGoogleSignInClient.signOut().addOnCompleteListener {
-                val intent= Intent(this, LoginScreen::class.java)
-                startActivity(intent)
-                finish()
+        val resultListView=findViewById<ListView>(R.id.resultText)
+        val adapter=ArrayAdapter<String>(this,R.layout.list_item)
+        resultListView.adapter=adapter
+
+        var numPage=1
+
+        var searchGithubUsers=findViewById<EditText>(R.id.searchGithubUsers)
+        var textNumPage=findViewById<TextView>(R.id.textNumPage)
+        val getUsers=findViewById<Button>(R.id.getUsers)
+        val getPrevUsers=findViewById<Button>(R.id.getPrevUsers)
+        val getNextUsers=findViewById<Button>(R.id.getNextUsers)
+
+        searchGithubUsers.addTextChangedListener {
+            if(searchGithubUsers.text.length==0){
+                getUsers.isEnabled=false
+                getPrevUsers.isEnabled=false
+                getNextUsers.isEnabled=false
+            }
+            else
+                getUsers.isEnabled=true
+        }
+
+        //Обработка кнопки Найти
+        getUsers.setOnClickListener(View.OnClickListener {
+            val timer = object: CountDownTimer(600, 1000) {
+                override fun onTick(millisUntilFinished: Long) {}
+
+                override fun onFinish() {
+                    numPage = 1
+                    getGithubUsers(searchGithubUsers.text.toString(), numPage, adapter, getNextUsers, textNumPage)
+                    getPrevUsers.isEnabled = false
+                }
+            }
+            timer.start()
+        })
+        //Обработка кнопки Назад
+        getPrevUsers.setOnClickListener(View.OnClickListener {
+            val timer = object: CountDownTimer(600, 1000) {
+                override fun onTick(millisUntilFinished: Long) {}
+
+                override fun onFinish() {
+                    numPage--
+                    getGithubUsers(searchGithubUsers.text.toString(), numPage, adapter, getNextUsers, textNumPage)
+                    getNextUsers.isEnabled=true
+                    if(numPage==1)
+                        getPrevUsers.isEnabled=false
+                }
+            }
+            timer.start()
+        })
+        //Обработка кнопки Вперед
+        getNextUsers.setOnClickListener(View.OnClickListener {
+            val timer = object: CountDownTimer(600, 1000) {
+                override fun onTick(millisUntilFinished: Long) {}
+
+                override fun onFinish() {
+                    numPage++
+                    getGithubUsers(searchGithubUsers.text.toString(), numPage, adapter, getNextUsers, textNumPage)
+                    if(!getPrevUsers.isEnabled)
+                        getPrevUsers.isEnabled=true
+                }
+            }
+            timer.start()
+        })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.menu_main, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.exitProfile -> {
+                mGoogleSignInClient.signOut().addOnCompleteListener {
+                    val intent= Intent(this, LoginScreen::class.java)
+                    startActivity(intent)
+                    finish()
+                }
+                return true
             }
         }
+        return super.onOptionsItemSelected(item)
     }
 }

@@ -75,9 +75,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="Sign in with Google"
+                        android:text="Войти через Google"
                         android:textAlignment="center"
-                        android:textSize="16sp"
+                        android:textSize="10dp"
                         android:textColor="@android:color/white"/>
 
                 </LinearLayout>

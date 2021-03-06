@@ -4,7 +4,6 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
 import android.widget.Toast
 import androidx.cardview.widget.CardView
 import com.google.android.gms.auth.api.signin.*
@@ -15,9 +14,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 
 class LoginScreen : AppCompatActivity() {
-    lateinit var mGoogleSignInClient: GoogleSignInClient
-    val Req_Code:Int=123
-    var firebaseAuth= FirebaseAuth.getInstance()
+    private lateinit var mGoogleSignInClient: GoogleSignInClient
+    private val Req_Code:Int=123
+    private var firebaseAuth= FirebaseAuth.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
