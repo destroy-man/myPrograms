@@ -9,7 +9,7 @@
 6. Head First Java-содержит список примеров из книги Head First Java (Сьерра К., Бейтс Б.).
 7. Java. Руководство для начинающих Шилдт-содержит список примеров из книги Java. Руководство для начинающих (Шилдт Г.).
 8. Kotlin/AuthGoogle-программа, осуществляющая авторизацию через google, а после авторизации позволяет искать пользователей в GitHub.
-9. KotlinLessons-список решений практических работ с курса https://younglinux.info/kotlin0/.
+9. KotlinLessons-список решений практических работ с курса https://younglinux.info/kotlin0/ (KotlinStart), https://younglinux.info/kotlin/oop/course (KotlinOOP).
 10. LazyKing-содержит решение задачи ленивого короля.
 11. Projects-содержит список рабочих проектов.
 12. SQLiteDataBaseSaveLoadDate-содержит программу по взаимодействию с бд SQLite (добавление данных в базу, вывод информации из базы, экспорт данных в xml файл).
