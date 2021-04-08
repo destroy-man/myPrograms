@@ -11,6 +11,8 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -29,18 +31,20 @@ class MainActivity : AppCompatActivity() {
         FirebaseAuth.getInstance()
     }
 
-    fun getGithubUsers(name:String,numPage:Int,adapter:ArrayAdapter<String>,buttonNext:Button,textNumPage:TextView){
-        adapter.clear()
+    fun getGithubUsers(name:String,numPage:Int,resultListView:RecyclerView,buttonNext:Button,textNumPage:TextView){
         val repository = SearchRepositoryProvider.provideSearchRepository()
         repository.searchUsers(name,numPage)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe ({
                     result ->
-                    for(i in 0..result.items.size-1)
-                        adapter.add(result.items[i].login+": "+result.items[i].html_url)
 
-                    if(adapter.count>0) {
+                        val resultList=mutableListOf<String>()
+                        for(i in 0..result.items.size-1)
+                            resultList.add(result.items[i].login+": "+result.items[i].html_url)
+                        resultListView.adapter=CustomRecycleAdapter(resultList)
+
+                    if(resultList.size>0) {
                         textNumPage.setText("Номер страницы: " + numPage+". Всего пользователей: "+result.total_count+".")
                         var countPages=0;
                         if(result.total_count%30==0)
@@ -82,9 +86,8 @@ class MainActivity : AppCompatActivity() {
         val viewUser=findViewById<ImageView>(R.id.viewUser)
         Picasso.with(this).load(user?.photoUrl).into(viewUser)
 
-        val resultListView=findViewById<ListView>(R.id.resultText)
-        val adapter=ArrayAdapter<String>(this,R.layout.list_item)
-        resultListView.adapter=adapter
+        val resultListView:RecyclerView=findViewById(R.id.resultText)
+        resultListView.layoutManager=LinearLayoutManager(this)
 
         var numPage=1
 
@@ -111,7 +114,7 @@ class MainActivity : AppCompatActivity() {
 
                 override fun onFinish() {
                     numPage = 1
-                    getGithubUsers(searchGithubUsers.text.toString(), numPage, adapter, getNextUsers, textNumPage)
+                    getGithubUsers(searchGithubUsers.text.toString(), numPage, resultListView, getNextUsers, textNumPage)
                     getPrevUsers.isEnabled = false
                 }
             }
@@ -124,7 +127,7 @@ class MainActivity : AppCompatActivity() {
 
                 override fun onFinish() {
                     numPage--
-                    getGithubUsers(searchGithubUsers.text.toString(), numPage, adapter, getNextUsers, textNumPage)
+                    getGithubUsers(searchGithubUsers.text.toString(), numPage, resultListView, getNextUsers, textNumPage)
                     getNextUsers.isEnabled=true
                     if(numPage==1)
                         getPrevUsers.isEnabled=false
@@ -139,7 +142,7 @@ class MainActivity : AppCompatActivity() {
 
                 override fun onFinish() {
                     numPage++
-                    getGithubUsers(searchGithubUsers.text.toString(), numPage, adapter, getNextUsers, textNumPage)
+                    getGithubUsers(searchGithubUsers.text.toString(), numPage, resultListView, getNextUsers, textNumPage)
                     if(!getPrevUsers.isEnabled)
                         getPrevUsers.isEnabled=true
                 }
