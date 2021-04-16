@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                         scope.launch{
                             while(line!=null){
                                 val idGame=line.split(";")[0].toLong()
-                                var achievement=achievementDao.getAchievement(idGame)
+                                var achievement=achievementDao.getAchievementById(idGame)
                                 if(achievement==null){
                                     achievement=Achievement()
                                     achievement.idGame=idGame
@@ -144,7 +144,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                             while (j < jsonArray.length()) {
                                 if ("" + jsonArray.getJSONObject(j).get("name") == i.nameAchievement){
                                     launch {
-                                        var achievement = achievementDao.getAchievement(i.idGame!!.toLong())
+                                        var achievement = achievementDao.getAchievementById(i.idGame!!.toLong())
                                         achievement.percent = jsonArray.getJSONObject(j).get("percent").toString().toDouble()
                                         achievementDao.update(achievement)
                                     }
@@ -153,11 +153,15 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                             }
                         }
                         else
-                            resultText.setText("Игра по данному ID не найдена!")
+                            launch(Dispatchers.Main){
+                                Toast.makeText(this@MainActivity,"Игра по данному ID не найдена!",Toast.LENGTH_SHORT).show()
+                            }
                     }
 
                     override fun onFailure(call: Call<ListAchievements>, t: Throwable) {
-                        resultText.setText("Не удалось подключиться к серверу!")
+                        launch(Dispatchers.Main){
+                            Toast.makeText(this@MainActivity,"Не удалось подключиться к серверу!",Toast.LENGTH_SHORT).show()
+                        }
                     }
                 })
             }
@@ -225,15 +229,22 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                 Toast.makeText(this, "Не заполнено поле ID игры!", Toast.LENGTH_SHORT).show()
             else{
                 scope.launch {
-                    var achievement=achievementDao.getAchievement(id.toString().toLong())
+                    var achievement=achievementDao.getAchievementById(id.toString().toLong())
                     if(achievement==null){
-                        achievement = Achievement()
-                        achievement.idGame = id.toString().toLong()
-                        achievement.nameGame = "" + nameGame
-                        achievement.nameAchievement = "" + textAchievement
-                        achievement.percent = percent.toString().split(":")[1].replace(',', '.').toDouble()
-                        achievementDao.insert(achievement)
-                        updateResultText(achievementDao)
+                        achievement=achievementDao.getAchievementByName(""+nameGame)
+                        if(achievement==null) {
+                            achievement = Achievement()
+                            achievement.idGame = id.toString().toLong()
+                            achievement.nameGame = "" + nameGame
+                            achievement.nameAchievement = "" + textAchievement
+                            achievement.percent = percent.toString().split(":")[1].replace(',', '.').toDouble()
+                            achievementDao.insert(achievement)
+                            updateResultText(achievementDao)
+                        }
+                        else
+                            launch(Dispatchers.Main){
+                                Toast.makeText(this@MainActivity,"Игра с данным названием уже добавлена!",Toast.LENGTH_SHORT).show()
+                            }
                     }
                     else
                         launch(Dispatchers.Main){
@@ -249,7 +260,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             val id=textId.text
             if(!id.isEmpty()) {
                 scope.launch {
-                    var achievement=achievementDao.getAchievement(id.toString().toLong())
+                    var achievement=achievementDao.getAchievementById(id.toString().toLong())
                     if(achievement!=null) {
                         if(textAchievement!=null) {
                             achievement.nameAchievement = "" + textAchievement
@@ -273,7 +284,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         btnDelete.setOnClickListener{
             val id=textId.text
             scope.launch {
-                var achievement=achievementDao.getAchievement(id.toString().toLong())
+                var achievement=achievementDao.getAchievementById(id.toString().toLong())
                 if(achievement!=null) {
                     achievementDao.delete(achievement)
                     updateResultText(achievementDao)

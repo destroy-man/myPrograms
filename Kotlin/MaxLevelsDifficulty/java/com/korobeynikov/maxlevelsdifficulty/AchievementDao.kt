@@ -9,7 +9,10 @@ interface AchievementDao {
     fun getSortedAll():MutableList<Achievement>
 
     @Query("SELECT * FROM  achievement WHERE idGame=:id")
-    fun getAchievement(id:Long):Achievement
+    fun getAchievementById(id:Long):Achievement
+
+    @Query("SELECT * FROM  achievement WHERE nameGame=:name")
+    fun getAchievementByName(name:String):Achievement
 
     @Insert
     fun insert(achievement:Achievement)
