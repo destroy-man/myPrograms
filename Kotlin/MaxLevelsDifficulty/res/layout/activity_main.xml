@@ -129,11 +129,31 @@
             android:text="Удалить" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/resultText"
+    <LinearLayout
+        android:id="@+id/resultTextLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnAddGroup" />
+        app:layout_constraintTop_toBottomOf="@+id/btnAddGroup"
+        android:orientation="horizontal">
+
+        <ScrollView
+            android:id="@+id/scrollResultText"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            android:fillViewport="true">
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/resultText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </HorizontalScrollView>
+        </ScrollView>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
