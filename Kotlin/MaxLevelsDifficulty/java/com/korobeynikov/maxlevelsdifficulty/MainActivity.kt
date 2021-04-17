@@ -285,17 +285,20 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         //Удалить достижение
         btnDelete.setOnClickListener{
             val id=textId.text
-            scope.launch {
-                var achievement=achievementDao.getAchievementById(id.toString().toLong())
-                if(achievement!=null) {
-                    achievementDao.delete(achievement)
-                    updateResultText(achievementDao)
+            if(!id.isEmpty()) {
+                scope.launch {
+                    var achievement = achievementDao.getAchievementById(id.toString().toLong())
+                    if (achievement != null) {
+                        achievementDao.delete(achievement)
+                        updateResultText(achievementDao)
+                    } else
+                        launch(Dispatchers.Main) {
+                            Toast.makeText(this@MainActivity, "Игра по данному ID не найдена!", Toast.LENGTH_SHORT).show()
+                        }
                 }
-                else
-                    launch(Dispatchers.Main){
-                        Toast.makeText(this@MainActivity,"Игра по данному ID не найдена!",Toast.LENGTH_SHORT).show()
-                    }
             }
+            else
+                Toast.makeText(this, "Не заполнено поле ID игры!", Toast.LENGTH_SHORT).show()
         }
         //
     }
