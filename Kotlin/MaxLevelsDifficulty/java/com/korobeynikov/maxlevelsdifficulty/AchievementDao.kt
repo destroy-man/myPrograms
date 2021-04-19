@@ -2,7 +2,7 @@ package com.korobeynikov.maxlevelsdifficulty
 
 import androidx.room.*
 
-//Интерфейс для взаимодейтсвия с базой данных
+//Интерфейс для взаимодействия с базой данных
 @Dao
 interface AchievementDao {
 
