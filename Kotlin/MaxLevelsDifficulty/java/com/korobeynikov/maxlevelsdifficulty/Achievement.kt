@@ -3,6 +3,7 @@ package com.korobeynikov.maxlevelsdifficulty
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+//Класс Entity представляющий сущность таблицы в базе данных
 @Entity
 class Achievement {
 

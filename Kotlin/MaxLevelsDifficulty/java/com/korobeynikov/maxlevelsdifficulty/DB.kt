@@ -3,6 +3,7 @@ package com.korobeynikov.maxlevelsdifficulty
 import android.app.Application
 import androidx.room.Room
 
+//Синглтон для создания базы данных
 class DB: Application() {
 
     private lateinit var database:AchievementDatabase

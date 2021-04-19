@@ -23,17 +23,18 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.*
 
 class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
-    lateinit var jsonArray: JSONArray
-    val retrofit=Retrofit.Builder().baseUrl("http://api.steampowered.com/ISteamUserStats/GetGlobalAchievementPercentagesForApp/")
-        .addConverterFactory(GsonConverterFactory.create()).build()
-    val achievementApi=retrofit.create(AchievementApi::class.java)
-    var db=DB.getInstance().getDatabase()
-    val achievementDao=db.achieventDao()
-    private val scope=CoroutineScope(Job())
+    private lateinit var jsonArray: JSONArray
+    private val retrofit=Retrofit.Builder().baseUrl("http://api.steampowered.com/ISteamUserStats/GetGlobalAchievementPercentagesForApp/")
+        .addConverterFactory(GsonConverterFactory.create()).build() //билдер ретрофита где указывается адрес сервера
+    private val achievementApi=retrofit.create(AchievementApi::class.java) //интерфейс для взаимодейтсвия с сервером
+    private var db=DB.getInstance().getDatabase() //синглтон для базы данных
+    private val achievementDao=db.achieventDao() //интерфейс для работы с базой данных
+    private val scope=CoroutineScope(Job()) //scope для создания корутин
 
-    private val REQUEST_CODE_PERMISSION_WRITE_STORAGE=1
-    private val REQUEST_CODE_PERMISSION_READ_STORAGE=2
+    private val REQUEST_CODE_PERMISSION_WRITE_STORAGE=1 //номер разрешения на запись данных на телефон
+    private val REQUEST_CODE_PERMISSION_READ_STORAGE=2 //номер разрешения на чтение данных с телефона
 
+    //Обработка разрешений
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         when(requestCode){
             REQUEST_CODE_PERMISSION_WRITE_STORAGE->
@@ -43,8 +44,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                         directory.mkdirs()
                     val achievementFile=File(directory.path+"/achievements.txt")
                     scope.launch{
-                        val achievementList=achievementDao.getSortedAll()
-                        if(achievementList!=null){
+                        val achievementList=achievementDao.getAll()
+                        if(achievementList.size>0){
                             try{
                                 val writer = BufferedWriter(FileWriter(achievementFile))
                                 for (i in achievementList) {
@@ -64,7 +65,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                         }
                         else
                             launch(Dispatchers.Main){
-                                Toast.makeText(this@MainActivity,"Нет сохраненных данных!",Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this@MainActivity,"Нет данных для сохранения!",Toast.LENGTH_SHORT).show()
                             }
                     }
                 }
@@ -115,12 +116,14 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     }
 
+    //Создание меню
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menu?.add(0,1,0,"Сохранить данные в файл")
         menu?.add(0,2,0,"Загрузить данные из файла")
         return super.onCreateOptionsMenu(menu)
     }
 
+    //Обработка выбора пунктов меню
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             1->ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_CODE_PERMISSION_WRITE_STORAGE)
@@ -186,7 +189,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         updateResultText(achievementDao)
         //Поиск достижений для указанной игры
         btnSearch.setOnClickListener{
-            if (textId.text.length > 0) {
+            if (textId.text.length > 0){
                 var achievements=achievementApi.getListAchievements(textId.text.toString().toLong())
                 achievements.enqueue(object : Callback<ListAchievements> {
                     override fun onResponse(call: Call<ListAchievements>, response: Response<ListAchievements>){
@@ -303,6 +306,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         //
     }
 
+    //Получение процента
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         var percent=jsonArray.getJSONObject(listAchievements.selectedItemPosition).get("percent")
         percent=String.format("%.1f",percent)
