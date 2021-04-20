@@ -83,7 +83,13 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                             while(line!=null){
                                 val idGame=line.split(";")[0].toLong()
                                 var achievement=achievementDao.getAchievementById(idGame)
-                                if(achievement==null){
+                                if(achievement!=null) {
+                                    val job = launch(Dispatchers.Main) {
+                                        Toast.makeText(this@MainActivity, "Игра "+achievement.nameGame+" уже добавлена!", Toast.LENGTH_SHORT).show()
+                                    }
+                                    job.join()
+                                }
+                                else{
                                     achievement=Achievement()
                                     achievement.idGame=idGame
                                     achievement.nameGame=line.split(";")[1]
@@ -147,7 +153,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                             var j = 0
                             while (j < jsonArray.length()) {
                                 if ("" + jsonArray.getJSONObject(j).get("name") == i.nameAchievement){
-                                    launch {
+                                    launch{
                                         var achievement = achievementDao.getAchievementById(i.idGame!!.toLong())
                                         achievement.percent = jsonArray.getJSONObject(j).get("percent").toString().toDouble()
                                         achievementDao.update(achievement)
