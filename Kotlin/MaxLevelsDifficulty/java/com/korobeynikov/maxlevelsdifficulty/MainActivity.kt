@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
+import android.text.format.DateFormat
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -21,6 +22,9 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.*
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.*
 
 class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private lateinit var jsonArray: JSONArray
@@ -49,7 +53,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                             try{
                                 val writer = BufferedWriter(FileWriter(achievementFile))
                                 for (i in achievementList) {
-                                    writer.write("" + i.idGame + ";" + i.nameGame + ";" + i.nameAchievement + ";" + i.percent)
+                                    writer.write("" + i.idGame + ";" + i.nameGame + ";" + i.nameAchievement + ";" + i.percent+";"+i.dateTime)
                                     writer.newLine()
                                 }
                                 writer.close()
@@ -95,6 +99,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                                     achievement.nameGame=line.split(";")[1]
                                     achievement.nameAchievement=line.split(";")[2]
                                     achievement.percent=line.split(";")[3].toDouble()
+                                    achievement.dateTime=line.split(";")[4].toLong()
                                     achievementDao.insert(achievement)
                                     if(!haveAchievements)haveAchievements=true
                                 }
@@ -186,11 +191,22 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         }
     }
 
+    //Проверка на корректность ввода даты и времени
+    fun checkDateTime():Long{
+        var dateTime: Long = 0
+        val formatter = SimpleDateFormat("dd.MM.yyyy HH:mm")
+        try {
+            dateTime = formatter.parse("" + textDate.text + " " + textTime.text).time
+        } catch (e: ParseException) {
+            Toast.makeText(this, "Дата и время некорректно введены. Формат даты: ##.##.####, формат времени: ##:##", Toast.LENGTH_LONG).show()
+        }
+        return dateTime
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         //Вывод данных по достижениям
         updateResultText(achievementDao)
         //Поиск достижений для указанной игры
@@ -232,35 +248,43 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             val textAchievement=listAchievements.selectedItem
             val id=textId.text
             val percent=textPercent.text
-            if(nameGame.isEmpty())
-                Toast.makeText(this, "Не заполнено поле Название игры!", Toast.LENGTH_SHORT).show()
-            else if(textAchievement.toString().isEmpty())
-                Toast.makeText(this, "Не указано достижение!", Toast.LENGTH_SHORT).show()
-            else if(id.isEmpty())
-                Toast.makeText(this, "Не заполнено поле ID игры!", Toast.LENGTH_SHORT).show()
-            else{
-                scope.launch {
-                    var achievement=achievementDao.getAchievementById(id.toString().toLong())
-                    if(achievement==null){
-                        achievement=achievementDao.getAchievementByName(""+nameGame)
-                        if(achievement==null) {
-                            achievement = Achievement()
-                            achievement.idGame = id.toString().toLong()
-                            achievement.nameGame = "" + nameGame
-                            achievement.nameAchievement = "" + textAchievement
-                            achievement.percent = percent.toString().split(":")[1].replace(',', '.').toDouble()
-                            achievementDao.insert(achievement)
-                            updateResultText(achievementDao)
+            if(textDate.text.isEmpty())
+                Toast.makeText(this,"Не заполнено поле Дата получения достижения. Формат даты: ##.##.####",Toast.LENGTH_LONG).show()
+            else if(textTime.text.isEmpty())
+                Toast.makeText(this,"Не заполнено поле Время получения достижения. Формат времени: ##:##",Toast.LENGTH_LONG).show()
+            else {
+                val dateTime = checkDateTime()
+                if (!dateTime.equals(0L)) {
+                    if (nameGame.isEmpty())
+                        Toast.makeText(this, "Не заполнено поле Название игры!", Toast.LENGTH_SHORT).show()
+                    else if (textAchievement.toString().isEmpty())
+                        Toast.makeText(this, "Не указано достижение!", Toast.LENGTH_SHORT).show()
+                    else if (id.isEmpty())
+                        Toast.makeText(this, "Не заполнено поле ID игры!", Toast.LENGTH_SHORT).show()
+                    else {
+                        scope.launch {
+                            var achievement = achievementDao.getAchievementById(id.toString().toLong())
+                            if (achievement == null) {
+                                achievement = achievementDao.getAchievementByName("" + nameGame)
+                                if (achievement == null) {
+                                    achievement = Achievement()
+                                    achievement.idGame = id.toString().toLong()
+                                    achievement.nameGame = "" + nameGame
+                                    achievement.nameAchievement = "" + textAchievement
+                                    achievement.percent = percent.toString().split(":")[1].replace(',', '.').toDouble()
+                                    achievement.dateTime = dateTime
+                                    achievementDao.insert(achievement)
+                                    updateResultText(achievementDao)
+                                } else
+                                    launch(Dispatchers.Main) {
+                                        Toast.makeText(this@MainActivity, "Игра с данным названием уже добавлена!", Toast.LENGTH_SHORT).show()
+                                    }
+                            } else
+                                launch(Dispatchers.Main) {
+                                    Toast.makeText(this@MainActivity, "Игра с данным ID уже добавлена!", Toast.LENGTH_SHORT).show()
+                                }
                         }
-                        else
-                            launch(Dispatchers.Main){
-                                Toast.makeText(this@MainActivity,"Игра с данным названием уже добавлена!",Toast.LENGTH_SHORT).show()
-                            }
                     }
-                    else
-                        launch(Dispatchers.Main){
-                            Toast.makeText(this@MainActivity,"Игра с данным ID уже добавлена!",Toast.LENGTH_SHORT).show()
-                        }
                 }
             }
         }
@@ -273,6 +297,14 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                 scope.launch {
                     var achievement=achievementDao.getAchievementById(id.toString().toLong())
                     if(achievement!=null) {
+                        if(!textDate.text.isEmpty() && !textTime.text.isEmpty()){
+                            val job=launch(Dispatchers.Main){
+                                val dateTime=checkDateTime()
+                                if(!dateTime.equals(0L))
+                                    achievement.dateTime=dateTime
+                            }
+                            job.join()
+                        }
                         if(textAchievement!=null) {
                             achievement.nameAchievement = "" + textAchievement
                             achievement.percent=textPercent.text.split(":")[1].replace(',','.').toDouble()

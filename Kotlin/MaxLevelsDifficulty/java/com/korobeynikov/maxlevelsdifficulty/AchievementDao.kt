@@ -6,7 +6,7 @@ import androidx.room.*
 @Dao
 interface AchievementDao {
 
-    @Query("SELECT * FROM  achievement ORDER BY percent asc,id desc")
+    @Query("SELECT * FROM  achievement ORDER BY percent asc,dateTime desc,id desc")
     fun getSortedAll():MutableList<Achievement>
 
     @Query("SELECT * FROM  achievement ORDER BY id asc")

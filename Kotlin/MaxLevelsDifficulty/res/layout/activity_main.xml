@@ -86,7 +86,49 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/btnAddGroup"
+        android:id="@+id/dateGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:id="@+id/labelDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Дата получения достижения:" />
+
+        <EditText
+            android:id="@+id/textDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/timeGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/labelTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Время получения достижения:" />
+
+        <EditText
+            android:id="@+id/textTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:inputType="time" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/btnGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 

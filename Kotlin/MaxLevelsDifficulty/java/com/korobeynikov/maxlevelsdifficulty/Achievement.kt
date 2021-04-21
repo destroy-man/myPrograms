@@ -2,6 +2,7 @@ package com.korobeynikov.maxlevelsdifficulty
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.util.*
 
 //Класс Entity представляющий сущность таблицы в базе данных
 @Entity
@@ -17,4 +18,6 @@ class Achievement {
     var nameAchievement:String?=null
 
     var percent:Double?=null
+
+    var dateTime:Long?=null
 }
