@@ -145,7 +145,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     fun updateResultText(achievementDao:AchievementDao){
         scope.launch{
-            var text=""
+            var text=StringBuilder()
             var sortListAchievements = achievementDao.getSortedAll()
             for (i in sortListAchievements) {
                 var achievements = achievementApi.getListAchievements(i.idGame!!.toLong())
@@ -183,10 +183,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             //Отображение отсортированного списка достижений
             sortListAchievements=achievementDao.getSortedAll()
             for(i in sortListAchievements)
-                text+=i.nameGame+"="+i.percent+"\n"
+                text.append(i.nameGame+"="+i.percent+"\n")
             
             withContext(Dispatchers.Main){
-                resultText.text=text
+                resultText.text=text.toString()
             }
         }
     }
