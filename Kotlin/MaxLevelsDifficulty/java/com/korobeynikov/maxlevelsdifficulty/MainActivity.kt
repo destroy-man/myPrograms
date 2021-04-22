@@ -57,18 +57,18 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                                     writer.newLine()
                                 }
                                 writer.close()
-                                launch(Dispatchers.Main){
+                                withContext(Dispatchers.Main){
                                     Toast.makeText(this@MainActivity,"Сохранение в файл успешно завершено!",Toast.LENGTH_SHORT).show()
                                 }
                             }
                             catch(e:IOException){
-                                launch(Dispatchers.Main){
+                                withContext(Dispatchers.Main){
                                     Toast.makeText(this@MainActivity,"Произошла ошибка при сохранении в файл!",Toast.LENGTH_SHORT).show()
                                 }
                             }
                         }
                         else
-                            launch(Dispatchers.Main){
+                            withContext(Dispatchers.Main){
                                 Toast.makeText(this@MainActivity,"Нет данных для сохранения!",Toast.LENGTH_SHORT).show()
                             }
                     }
@@ -107,11 +107,11 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                             }
                             updateResultText(achievementDao)
                             if(haveAchievements)
-                                launch(Dispatchers.Main){
+                                withContext(Dispatchers.Main){
                                     Toast.makeText(this@MainActivity, "Данные из файла успешно загружены!", Toast.LENGTH_SHORT).show()
                                 }
                             else
-                                launch(Dispatchers.Main){
+                                withContext(Dispatchers.Main){
                                     Toast.makeText(this@MainActivity, "В файле не обнаружено данных для загрузки!", Toast.LENGTH_SHORT).show()
                                 }
                             reader.close()
@@ -185,7 +185,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             for(i in sortListAchievements)
                 text+=i.nameGame+"="+i.percent+"\n"
             
-            launch(Dispatchers.Main){
+            withContext(Dispatchers.Main){
                 resultText.text=text
             }
         }
@@ -275,12 +275,14 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                                     achievement.dateTime = dateTime
                                     achievementDao.insert(achievement)
                                     updateResultText(achievementDao)
-                                } else
-                                    launch(Dispatchers.Main) {
+                                }
+                                else
+                                    withContext(Dispatchers.Main) {
                                         Toast.makeText(this@MainActivity, "Игра с данным названием уже добавлена!", Toast.LENGTH_SHORT).show()
                                     }
-                            } else
-                                launch(Dispatchers.Main) {
+                            }
+                            else
+                                withContext(Dispatchers.Main) {
                                     Toast.makeText(this@MainActivity, "Игра с данным ID уже добавлена!", Toast.LENGTH_SHORT).show()
                                 }
                         }
@@ -315,7 +317,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                         updateResultText(achievementDao)
                     }
                     else
-                        launch(Dispatchers.Main){
+                        withContext(Dispatchers.Main){
                             Toast.makeText(this@MainActivity,"Игра по данному ID не найдена!",Toast.LENGTH_SHORT).show()
                         }
                 }
@@ -332,8 +334,9 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                     if (achievement != null) {
                         achievementDao.delete(achievement)
                         updateResultText(achievementDao)
-                    } else
-                        launch(Dispatchers.Main) {
+                    }
+                    else
+                        withContext(Dispatchers.Main) {
                             Toast.makeText(this@MainActivity, "Игра по данному ID не найдена!", Toast.LENGTH_SHORT).show()
                         }
                 }
