@@ -9,11 +9,9 @@ import javax.inject.Provider
 
 class MainActivity : AppCompatActivity() {
 
-    @DatabaseProd
     @Inject
     lateinit var mDatabaseUtils: Map<String,DatabaseUtils>
-
-    @DatabaseTest
+    
     @Inject
     lateinit var mDatabaseUtilsTest: Map<String,DatabaseUtils>
 
