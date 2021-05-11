@@ -10,7 +10,12 @@
 7. Java. Руководство для начинающих Шилдт-содержит список примеров из книги Java. Руководство для начинающих (Шилдт Г.).
 8. Kotlin/AuthGoogle-программа, осуществляющая авторизацию через google, а после авторизации позволяет искать пользователей в GitHub.
 9. Kotlin/MaxLevelsDifficulty-содержит программу для хранения информации о достижениях Steam (посредством Room и корутин) и их своевременного обновления (посредством использования Retrofit).
-10. KotlinLessons-список решений практических работ с курсов https://younglinux.info/kotlin0/ (KotlinStart), https://younglinux.info/kotlin/oop/course (KotlinOOP), https://younglinux.info/kotlin/course (KotlinBasics), https://startandroid.ru/ru/courses/kotlin.html (KotlinCoroutine).
+10. KotlinLessons-список решений практических работ с курсов:
+10.1 https://younglinux.info/kotlin0/ (KotlinStart). 
+10.2 https://younglinux.info/kotlin/oop/course (KotlinOOP).
+10.3 https://younglinux.info/kotlin/course (KotlinBasics). 
+10.4 https://startandroid.ru/ru/courses/kotlin.html (KotlinCoroutine).
+10.5 https://startandroid.ru/ru/courses/dagger-2.html (Dagger2).
 11. LazyKing-содержит решение задачи ленивого короля.
 12. Projects-содержит список рабочих проектов.
 13. SQLiteDataBaseSaveLoadDate-содержит программу по взаимодействию с бд SQLite (добавление данных в базу, вывод информации из базы, экспорт данных в xml файл).
