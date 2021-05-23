@@ -24,19 +24,16 @@ class MainActivity : AppCompatActivity() {
 
         val dbh=DBHelper(this)
         val db=dbh.writableDatabase
-
         Log.d(LOG_TAG,"--- Table position ---")
         var c=db.query("position",null,null,null,null,null,null)
         logCursor(c)
         c.close()
         Log.d(LOG_TAG,"--- ---")
-
         Log.d(LOG_TAG,"--- Table people ---")
         c=db.query("people",null,null,null,null,null,null)
         logCursor(c)
         c.close()
         Log.d(LOG_TAG,"--- ---")
-
         Log.d(LOG_TAG,"--- INNER JOIN with rawQuery ---")
         val sqlQuery="select PL.name as Name, PS.name as Position, salary as Salary from people as PL " +
                 "inner join position as PS on PL.posid = PS.id where salary > ?"
@@ -44,7 +41,6 @@ class MainActivity : AppCompatActivity() {
         logCursor(c)
         c.close()
         Log.d(LOG_TAG,"--- ---")
-
         Log.d(LOG_TAG,"--- INNER JOIN with query ---")
         val table="people as PL inner join position as PS on PL.posid = PS.id"
         val columns=arrayOf("PL.name as Name","PS.name as Position","salary as Salary")
