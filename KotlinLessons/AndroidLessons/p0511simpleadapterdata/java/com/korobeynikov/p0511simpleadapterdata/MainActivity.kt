@@ -34,13 +34,9 @@ class MainActivity : AppCompatActivity() {
         sAdapter=SimpleAdapter(this,data,R.layout.item,from,to.toIntArray())
         lvSimple.adapter=sAdapter
         registerForContextMenu(lvSimple)
-
-        btn.setOnClickListener {
-            onButtonClick()
-        }
     }
 
-    fun onButtonClick(){
+    fun onButtonClick(v:View){
         m=HashMap<String,Object>()
         (m as HashMap<String,Object>)[ATTRIBUTE_NAME_TEXT]=("sometext "+(data.size+1)) as Object
         (m as HashMap<String,Object>)[ATTRIBUTE_NAME_IMAGE]=R.drawable.ic_launcher_foreground as Object
