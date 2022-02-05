@@ -154,7 +154,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                     //Отображение отсортированного списка достижений
                     sortListAchievements=achievementDao.getSortedAll()
                     for(i in sortListAchievements)
-                        text.append(i.nameGame+"="+i.percent+"\n")
+                        text.append(i.nameGame+" ("+i.idGame+") = "+i.percent+"\n")
 
                     withContext(Dispatchers.Main){
                         resultText.text=text.toString()
@@ -189,7 +189,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             //Отображение отсортированного списка достижений
             sortListAchievements=achievementDao.getSortedAll()
             for(i in sortListAchievements)
-                text.append(i.nameGame+"="+i.percent+"\n")
+                text.append(i.nameGame+" ("+i.idGame+") = "+i.percent+"\n")
 
             withContext(Dispatchers.Main){
                 resultText.text=text.toString()
