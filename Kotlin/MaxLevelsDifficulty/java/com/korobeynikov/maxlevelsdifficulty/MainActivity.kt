@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
-import android.text.format.DateFormat
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -37,6 +36,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     private val REQUEST_CODE_PERMISSION_WRITE_STORAGE=1 //номер разрешения на запись данных на телефон
     private val REQUEST_CODE_PERMISSION_READ_STORAGE=2 //номер разрешения на чтение данных с телефона
+
+    var mapPercents = mutableMapOf<String,Double>() //массив для хранения обновленных данных
 
     //Обработка разрешений
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -131,6 +132,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menu?.add(0,1,0,"Сохранить данные в файл")
         menu?.add(0,2,0,"Загрузить данные из файла")
+        menu?.add(0,3,0,"Обновить данные")
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -139,6 +141,26 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         when(item.itemId) {
             1->ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_CODE_PERMISSION_WRITE_STORAGE)
             2->ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_CODE_PERMISSION_READ_STORAGE)
+            3->{
+                scope.launch {
+                    var text = StringBuilder()
+                    var sortListAchievements = achievementDao.getSortedAll()
+                    for(achievement in sortListAchievements){
+                        var percent=mapPercents.get(achievement.nameGame)
+                        percent=String.format("%.1f",percent).replace(",",".").toDouble()
+                        achievement.percent=percent
+                        achievementDao.update(achievement)
+                    }
+                    //Отображение отсортированного списка достижений
+                    sortListAchievements=achievementDao.getSortedAll()
+                    for(i in sortListAchievements)
+                        text.append(i.nameGame+"="+i.percent+"\n")
+
+                    withContext(Dispatchers.Main){
+                        resultText.text=text.toString()
+                    }
+                }
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -149,42 +171,26 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             var sortListAchievements = achievementDao.getSortedAll()
             for (i in sortListAchievements) {
                 var achievements = achievementApi.getListAchievements(i.idGame!!.toLong())
-                achievements.enqueue(object : Callback<ListAchievements> {
-                    override fun onResponse(call: Call<ListAchievements>, response: Response<ListAchievements>){
-                        if (response.isSuccessful) {
-                            val json = response.body()?.achievementpercentages.toString()
-                            val jsonObj = JSONObject(json.substring(json.indexOf("{"), json.lastIndexOf("}") + 1))
-                            jsonArray = (jsonObj["achievements"] as JSONArray)
-                            var j = 0
-                            while (j < jsonArray.length()) {
-                                if ("" + jsonArray.getJSONObject(j).get("name") == i.nameAchievement){
-                                    launch{
-                                        var achievement = achievementDao.getAchievementById(i.idGame!!.toLong())
-                                        achievement.percent = jsonArray.getJSONObject(j).get("percent").toString().toDouble()
-                                        achievementDao.update(achievement)
-                                    }
-                                }
-                                j++
-                            }
+                val response=achievements.execute()
+                if(response.isSuccessful){
+                    val json = response.body()?.achievementpercentages.toString()
+                    val jsonObj = JSONObject(json.substring(json.indexOf("{"), json.lastIndexOf("}") + 1))
+                    jsonArray = (jsonObj["achievements"] as JSONArray)
+                    var j = 0
+                    while (j < jsonArray.length()) {
+                        if ("" + jsonArray.getJSONObject(j).get("name") == i.nameAchievement){
+                            mapPercents.put(i.nameGame.toString(),jsonArray.getJSONObject(j).get("percent").toString().toDouble())
+                            break
                         }
-                        else
-                            launch(Dispatchers.Main){
-                                Toast.makeText(this@MainActivity,"Игра по данному ID не найдена!",Toast.LENGTH_SHORT).show()
-                            }
+                        j++
                     }
-
-                    override fun onFailure(call: Call<ListAchievements>, t: Throwable) {
-                        launch(Dispatchers.Main){
-                            Toast.makeText(this@MainActivity,"Не удалось подключиться к серверу!",Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                })
+                }
             }
             //Отображение отсортированного списка достижений
             sortListAchievements=achievementDao.getSortedAll()
             for(i in sortListAchievements)
                 text.append(i.nameGame+"="+i.percent+"\n")
-            
+
             withContext(Dispatchers.Main){
                 resultText.text=text.toString()
             }
