@@ -313,10 +313,12 @@ public class MainActivity extends AppCompatActivity {
                     if (!incorrectRating) {
                         int updCount=0;
 
-                        if(yearGameText.isEmpty())updCount=db.update("Games",cv,"name=?",new String[]{nameGameText});
-                        else updCount=db.update("Games",cv,"name=? AND year=?",new String[]{nameGameText,yearGameText});
+                        if(yearGameText.isEmpty())updCount=db.update("Games",cv,"name LIKE ?",new String[]{"%"+nameGameText+"%"});
+                        else updCount=db.update("Games",cv,"name LIKE ? AND year=?",new String[]{"%"+nameGameText+"%",yearGameText});
 
-                        if(updCount>0)
+                        if(updCount>1)
+                            Toast.makeText(mainActivity,"Данные об играх успешно изменены!",Toast.LENGTH_SHORT).show();
+                        else if(updCount>0)
                             Toast.makeText(mainActivity,"Данные об игре успешно изменены!",Toast.LENGTH_SHORT).show();
                         else
                             Toast.makeText(mainActivity,"Данная игра не найдена!",Toast.LENGTH_SHORT).show();
@@ -337,10 +339,12 @@ public class MainActivity extends AppCompatActivity {
                 if(nameGameText.isEmpty())
                     Toast.makeText(mainActivity,"Для удаления игры необходимо заполнить поле Название!",Toast.LENGTH_LONG).show();
                 else{
-                    if(yearGameText.isEmpty())delCount=db.delete("Games","name='"+nameGameText+"'",null);
-                    else delCount=db.delete("Games","name='"+nameGameText+"' AND year='"+yearGameText+"'",null);
+                    if(yearGameText.isEmpty())delCount=db.delete("Games","name LIKE '%"+nameGameText+"%'",null);
+                    else delCount=db.delete("Games","name LIKE '%"+nameGameText+"%' AND year='"+yearGameText+"'",null);
 
-                    if(delCount>0)
+                    if(delCount>1)
+                        Toast.makeText(mainActivity,"Игры успешно удалены!",Toast.LENGTH_SHORT).show();
+                    else if(delCount>0)
                         Toast.makeText(mainActivity,"Игра успешно удалена!",Toast.LENGTH_SHORT).show();
                     else
                         Toast.makeText(mainActivity,"Данная игра не найдена!",Toast.LENGTH_SHORT).show();
