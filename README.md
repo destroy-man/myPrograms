@@ -10,11 +10,12 @@
 7. Java. Руководство для начинающих Шилдт-содержит список примеров из книги Java. Руководство для начинающих (Шилдт Г.).
 8. Kotlin/AuthGoogle-программа, осуществляющая авторизацию через google, а после авторизации позволяет искать пользователей в GitHub.
 9. Kotlin/MaxLevelsDifficulty-содержит программу для хранения информации о достижениях Steam (посредством Room и корутин) и их своевременного обновления (посредством использования Retrofit).
-10. KotlinLessons-список решений практических работ с курсов: https://younglinux.info/kotlin0/ (KotlinStart), https://younglinux.info/kotlin/oop/course (KotlinOOP), https://younglinux.info/kotlin/course (KotlinBasics), https://startandroid.ru/ru/courses/kotlin.html (KotlinCoroutine), https://startandroid.ru/ru/courses/dagger-2.html (Dagger2), https://startandroid.ru/ru/uroki.html (AndroidLessons).
-11. LazyKing-содержит решение задачи ленивого короля.
-12. Projects-содержит список рабочих проектов.
-13. SQLiteDataBaseSaveLoadDate-содержит программу по взаимодействию с бд SQLite (добавление данных в базу, вывод информации из базы, экспорт данных в xml файл).
-14. Spring/springapp1-учебный проект по Spring.
-15. chat-содержит программу чат для общения между пользователями.
-16. Курсовая 2-курсовая, которую я написал на 2 семестре обучения в УРФУ им. Ельцина. Информация о программе в пояснительной записке.
-17. Курсовая 5-курсовая, которуя я написал на 5 семестре обучения в УРФУ им. Ельцина. Информация о программе в пояснительной записке.
+10. Kotlin/MyDictionary-содержит программу для хранения, фильтрации и сортировки слов и перевода этих слов (к примеру с английского на русский) в базе данных Realm.
+11. KotlinLessons-список решений практических работ с курсов: https://younglinux.info/kotlin0/ (KotlinStart), https://younglinux.info/kotlin/oop/course (KotlinOOP), https://younglinux.info/kotlin/course (KotlinBasics), https://startandroid.ru/ru/courses/kotlin.html (KotlinCoroutine), https://startandroid.ru/ru/courses/dagger-2.html (Dagger2), https://startandroid.ru/ru/uroki.html (AndroidLessons).
+12. LazyKing-содержит решение задачи ленивого короля.
+13. Projects-содержит список рабочих проектов.
+14. SQLiteDataBaseSaveLoadDate-содержит программу по взаимодействию с бд SQLite (добавление данных в базу, вывод информации из базы, экспорт данных в xml файл).
+15. Spring/springapp1-учебный проект по Spring.
+16. chat-содержит программу чат для общения между пользователями.
+17. Курсовая 2-курсовая, которую я написал на 2 семестре обучения в УРФУ им. Ельцина. Информация о программе в пояснительной записке.
+18. Курсовая 5-курсовая, которуя я написал на 5 семестре обучения в УРФУ им. Ельцина. Информация о программе в пояснительной записке.
