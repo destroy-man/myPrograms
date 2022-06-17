@@ -57,6 +57,9 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             realm.close()
+            scope.launch {
+                showOriginalAndTranslation("${originalText.text}*")
+            }
             if (allWords.isNotEmpty())
                 try {
                     val writer = BufferedWriter(FileWriter(fileDictionary))
@@ -120,7 +123,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 realm.close()
                 scope.launch {
-                    showOriginalAndTranslation("")
+                    showOriginalAndTranslation("${originalText.text}*")
                 }
                 withContext(Dispatchers.Main) {
                     Toast.makeText(this@MainActivity, "Данные из файла успешно загружены!"
@@ -172,32 +175,30 @@ class MainActivity : AppCompatActivity() {
                             , originalText, translationText))
                 }
                 realm.close()
-                showOriginalAndTranslation("")
+                showOriginalAndTranslation("$originalText*")
             }
         }
-        //Удаление слов по введенным символам в поле Слово
+        //Удаление слова по введенному слову в поле Слово
         deleteWord.setOnClickListener {
             val originalText = originalText.text.toString()
             scope.launch {
                 var isWordExisted = true
                 realm = Realm.getInstance(config)
                 realm.executeTransactionAwait(Dispatchers.Default) { realmTransaction ->
-                    val words: List<Word> = realmTransaction.where(Word::class.java)
-                        .like("original", "$originalText*", Case.INSENSITIVE)
-                        .sort("original").findAll()
-                    if (words.isNotEmpty())
-                        for (word in words)
-                            word.deleteFromRealm()
+                    val word = realmTransaction.where(Word::class.java)
+                        .equalTo("original", originalText).sort("original").findFirst()
+                    if (word != null)
+                        word.deleteFromRealm()
                     else
                         isWordExisted = false
                 }
                 realm.close()
                 if (!isWordExisted)
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(this@MainActivity, "Ничего не найдено для удаления!"
+                        Toast.makeText(this@MainActivity, "Не найдено слово для удаления!"
                             , Toast.LENGTH_LONG).show()
                     }
-                showOriginalAndTranslation("")
+                showOriginalAndTranslation("$originalText*")
             }
         }
         //Сохранение слов в файл
