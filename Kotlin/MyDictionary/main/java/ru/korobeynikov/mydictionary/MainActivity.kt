@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
     private val REQUEST_CODE_PERMISSION_READ_STORAGE = 2
     private val REQUEST_CODE_PERMISSION_MANAGE_STORAGE = 3
     var numOperation = 0
-    var isRealmClosed=true
+    var isRealmClosed = true
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         when (requestCode) {
