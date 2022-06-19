@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity() {
     private val REQUEST_CODE_PERMISSION_READ_STORAGE = 2
     private val REQUEST_CODE_PERMISSION_MANAGE_STORAGE = 3
     var numOperation = 0
+    var isRealmClosed=true
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         when (requestCode) {
@@ -153,9 +154,10 @@ class MainActivity : AppCompatActivity() {
             override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun afterTextChanged(text: Editable?) {
-                scope.launch {
-                    showOriginalAndTranslation("${text.toString()}*")
-                }
+                if (isRealmClosed)
+                    scope.launch {
+                        showOriginalAndTranslation("${text.toString()}*")
+                    }
             }
         })
         //Добавление одного слова
@@ -246,6 +248,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     suspend fun showOriginalAndTranslation(findWord: String) {
+        isRealmClosed = false
         val allWords = StringBuilder()
         realm = Realm.getInstance(config)
         realm.executeTransactionAwait(Dispatchers.Default) { realmTransaction ->
@@ -266,6 +269,7 @@ class MainActivity : AppCompatActivity() {
             showWordsText.text = allWords.toString()
             countWords.text = "Слов: ${allWords.split("\n").size - 1}"
         }
+        isRealmClosed = true
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
