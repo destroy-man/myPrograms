@@ -19,7 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0"
-            android:text="Слово:" />
+            android:text="@string/originalLabel" />
 
         <EditText
             android:id="@+id/originalText"
@@ -41,7 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0"
-            android:text="Перевод:" />
+            android:text="@string/translationLabel" />
 
         <EditText
             android:id="@+id/translationText"
@@ -62,14 +62,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Добавить слово в словарь" />
+            android:text="@string/addWordText" />
 
         <Button
             android:id="@+id/deleteWord"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Удалить из словаря" />
+            android:text="@string/deleteWordText" />
 
     </LinearLayout>
 
@@ -84,14 +84,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Сохранить слова в файл" />
+            android:text="@string/saveWordsText" />
 
         <Button
             android:id="@+id/loadWordsFromFile"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Добавить слова из файла" />
+            android:text="@string/loadWordText" />
 
     </LinearLayout>
 
@@ -107,7 +107,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:checked="true"
-            android:text="Показать перевод" />
+            android:text="@string/showTranslationText" />
 
         <TextView
             android:id="@+id/countWords"
