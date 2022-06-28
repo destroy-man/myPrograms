@@ -7,4 +7,5 @@
     <string name="saveWordsText">Сохранить слова в файл</string>
     <string name="loadWordText">Добавить слова из файла</string>
     <string name="showTranslationText">Показать перевод</string>
+    <string name="cutListText">Обрезать список по фильтру</string>
 </resources>

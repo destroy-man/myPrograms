@@ -35,27 +35,6 @@ class MainActivity : AppCompatActivity() {
     private val REQUEST_CODE_PERMISSION_MANAGE_STORAGE = 3
     var numOperation = 0
     var isRealmClosed = true
-    var isCutList = false
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menu?.add(0, 1, 0, "Обрезать список по фильтру")
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            1 -> {
-                scope.launch {
-                    isCutList = true
-                    if (originalText.text.isNotEmpty() || translationText.text.isEmpty())
-                        showOriginalAndTranslation("", "original")
-                    else
-                        showOriginalAndTranslation("", "translation")
-                }
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray, ) {
         when (requestCode) {
@@ -290,6 +269,22 @@ class MainActivity : AppCompatActivity() {
                     showOriginalAndTranslation("*${translationText.text}*", "translation")
             }
         }
+        //Обрезание текста по фильтру
+        cutList.setOnClickListener {
+            scope.launch {
+                val findWord =
+                    if (cutList.isChecked)
+                        ""
+                    else if (originalText.text.isNotEmpty() || translationText.text.isEmpty())
+                        "*${originalText.text}*"
+                    else
+                        "*${translationText.text}*"
+                if (originalText.text.isNotEmpty() || translationText.text.isEmpty())
+                    showOriginalAndTranslation(findWord, "original")
+                else
+                    showOriginalAndTranslation(findWord, "translation")
+            }
+        }
     }
 
     suspend fun showOriginalAndTranslation(findWord: String, fieldName: String) {
@@ -297,20 +292,19 @@ class MainActivity : AppCompatActivity() {
         val allWords = StringBuilder()
         realm = Realm.getInstance(config)
         realm.executeTransactionAwait(Dispatchers.Default) { realmTransaction ->
-            var listWords: List<Word> = if (findWord.isEmpty())
+            var listWords: List<Word> = if (findWord.isEmpty() || cutList.isChecked)
                 realmTransaction.where(Word::class.java).sort(fieldName).findAll()
             else
                 realmTransaction.where(Word::class.java).like(fieldName, findWord, Case.INSENSITIVE)
                     .sort(fieldName).findAll()
             if (listWords.isNotEmpty())
-                if (isCutList) {
+                if (cutList.isChecked) {
                     val indexCut =
                         if (fieldName == "original")
                             listWords.indexOf(listWords.find { word -> word.original.startsWith(originalText.text) })
                         else
                             listWords.indexOf(listWords.find { word -> word.translation.startsWith(translationText.text) })
                     listWords = listWords.subList(indexCut, listWords.lastIndex + 1)
-                    isCutList = false
                 }
             for (word in listWords) {
                 if (showTranslation.isChecked) {
