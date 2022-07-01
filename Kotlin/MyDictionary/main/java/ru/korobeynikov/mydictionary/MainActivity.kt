@@ -11,8 +11,6 @@ import android.os.Environment
 import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.Menu
-import android.view.MenuItem
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import io.realm.Case
@@ -24,17 +22,21 @@ import kotlinx.coroutines.*
 import org.bson.types.ObjectId
 import java.io.*
 import java.util.*
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var config: RealmConfiguration
     lateinit var realm: Realm
-    val scope = CoroutineScope(Job())
     private val REQUEST_CODE_PERMISSION_WRITE_STORAGE = 1
     private val REQUEST_CODE_PERMISSION_READ_STORAGE = 2
     private val REQUEST_CODE_PERMISSION_MANAGE_STORAGE = 3
     var numOperation = 0
     var isRealmClosed = true
+
+    @Inject
+    lateinit var config: RealmConfiguration
+    @Inject
+    lateinit var scope: CoroutineScope
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray, ) {
         when (requestCode) {
@@ -150,9 +152,10 @@ class MainActivity : AppCompatActivity() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         //Инициализация realm и отображение всего списка слов
         Realm.init(this)
-        config = RealmConfiguration.Builder().schemaVersion(1L).build()
+        (application as MyDictionaryApp).myDictionaryComponent.injectMainActivity(this)
         scope.launch {
             showOriginalAndTranslation("", "original")
         }
@@ -178,6 +181,22 @@ class MainActivity : AppCompatActivity() {
                 if (isRealmClosed)
                     scope.launch {
                         showOriginalAndTranslation("*${text.toString()}*", "translation")
+                    }
+            }
+        })
+        //Ограничение на количество слов
+        countWordsText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+            override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+            override fun afterTextChanged(text: Editable?) {
+                if (isRealmClosed)
+                    scope.launch {
+                        if (originalText.text.isNotEmpty() || translationText.text.isEmpty())
+                            showOriginalAndTranslation("*${originalText.text}*", "original")
+                        else
+                            showOriginalAndTranslation("*${translationText.text}*", "translation")
                     }
             }
         })
@@ -288,6 +307,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     suspend fun showOriginalAndTranslation(findWord: String, fieldName: String) {
+        val countWordShowString = countWordsText.text.toString()
+        var countWordsShow =
+            when {
+                countWordShowString.isEmpty() -> -1
+                else -> countWordShowString.toInt()
+            }
         isRealmClosed = false
         val allWords = StringBuilder()
         realm = Realm.getInstance(config)
@@ -297,7 +322,7 @@ class MainActivity : AppCompatActivity() {
             else
                 realmTransaction.where(Word::class.java).like(fieldName, findWord, Case.INSENSITIVE)
                     .sort(fieldName).findAll()
-            if (listWords.isNotEmpty())
+            if (listWords.isNotEmpty()) {
                 if (cutList.isChecked) {
                     val indexCut =
                         if (fieldName == "original")
@@ -306,16 +331,20 @@ class MainActivity : AppCompatActivity() {
                             listWords.indexOf(listWords.find { word -> word.translation.startsWith(translationText.text) })
                     listWords = listWords.subList(indexCut, listWords.lastIndex + 1)
                 }
-            for (word in listWords) {
-                if (showTranslation.isChecked) {
-                    if (fieldName == "original")
-                        allWords.append(" ${word.original} = ${word.translation}\n")
+                if (countWordsShow == -1 || countWordsShow > listWords.size)
+                    countWordsShow = listWords.size
+                for (index in 0 until countWordsShow) {
+                    val word = listWords[index]
+                    if (showTranslation.isChecked) {
+                        if (fieldName == "original")
+                            allWords.append(" ${word.original} = ${word.translation}\n")
+                        else
+                            allWords.append(" ${word.translation} = ${word.original}\n")
+                    } else if (fieldName == "translation")
+                        allWords.append(" ${word.translation}\n")
                     else
-                        allWords.append(" ${word.translation} = ${word.original}\n")
-                } else if (fieldName == "translation")
-                    allWords.append(" ${word.translation}\n")
-                else
-                    allWords.append(" ${word.original}\n")
+                        allWords.append(" ${word.original}\n")
+                }
             }
         }
         realm.close()
