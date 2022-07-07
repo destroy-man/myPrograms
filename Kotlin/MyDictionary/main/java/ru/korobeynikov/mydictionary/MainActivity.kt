@@ -7,158 +7,68 @@ import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Environment
 import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
-import io.realm.Case
 import io.realm.Realm
 import io.realm.RealmConfiguration
-import io.realm.kotlin.executeTransactionAwait
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.*
-import org.bson.types.ObjectId
-import java.io.*
-import java.util.*
+import ru.korobeynikov.daggercomponents.MyDictionaryApp
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var realm: Realm
-    private val REQUEST_CODE_PERMISSION_WRITE_STORAGE = 1
-    private val REQUEST_CODE_PERMISSION_READ_STORAGE = 2
-    private val REQUEST_CODE_PERMISSION_MANAGE_STORAGE = 3
+    companion object {
+        const val REQUEST_CODE_PERMISSION_WRITE_STORAGE = 1
+        const val REQUEST_CODE_PERMISSION_READ_STORAGE = 2
+    }
+
     var numOperation = 0
-    var isRealmClosed = true
 
     @Inject
     lateinit var config: RealmConfiguration
+
     @Inject
     lateinit var scope: CoroutineScope
 
+    @Inject
+    lateinit var mainPresenter: MainPresenter
+
+    @Inject
+    lateinit var mainModel: MainModel
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray, ) {
         when (requestCode) {
-            REQUEST_CODE_PERMISSION_WRITE_STORAGE -> writeFile()
-            REQUEST_CODE_PERMISSION_READ_STORAGE -> readFile()
+            REQUEST_CODE_PERMISSION_WRITE_STORAGE -> {
+                scope.launch {
+                    mainPresenter.saveWordsInFile(this@MainActivity)
+                    showMessage(mainPresenter.message)
+                    showOriginalOrTranslation()
+                }
+            }
+            REQUEST_CODE_PERMISSION_READ_STORAGE -> {
+                scope.launch {
+                    mainPresenter.loadWordsFromFile(this@MainActivity)
+                    showMessage(mainPresenter.message)
+                    showOriginalOrTranslation()
+                }
+            }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }
-
-    private fun writeFile() {
-        val directory = File(Environment.getExternalStorageDirectory().absolutePath, "My dictionary")
-        if (!directory.exists())
-            directory.mkdirs()
-        val fileDictionary = File(directory, "List words.txt")
-        scope.launch {
-            val allWords = StringBuilder()
-            realm = Realm.getInstance(config)
-            realm.executeTransactionAwait(Dispatchers.Default) { realmTransaction ->
-                val listWords: List<Word>
-                listWords = realmTransaction.where(Word::class.java).sort("original").findAll()
-                if (listWords.isNotEmpty())
-                    for (word in listWords)
-                        allWords.append("${word.original}=${word.translation}\n")
-            }
-            realm.close()
-            scope.launch {
-                if (originalText.text.isNotEmpty() || translationText.text.isEmpty())
-                    showOriginalAndTranslation("*${originalText.text}*", "original")
-                else
-                    showOriginalAndTranslation("*${translationText.text}*", "translation")
-            }
-            if (allWords.isNotEmpty())
-                try {
-                    val writer = BufferedWriter(FileWriter(fileDictionary))
-                    writer.write(allWords.toString())
-                    writer.close()
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(this@MainActivity, "Сохранение в файл успешно завершено!"
-                            , Toast.LENGTH_LONG).show()
-                    }
-                } catch (e: IOException) {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(this@MainActivity, "Произошла ошибка при сохранении в файл!"
-                            , Toast.LENGTH_LONG).show()
-                    }
-                }
-            else
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(this@MainActivity, "Нет данных для сохранения!"
-                        , Toast.LENGTH_LONG).show()
-                }
-        }
-    }
-
-    private fun readFile() {
-        val directory = File(Environment.getExternalStorageDirectory().absolutePath, "My dictionary")
-        if (!directory.exists())
-            directory.mkdirs()
-        val fileDictionary = File(directory, "List words.txt")
-        scope.launch {
-            val allWords = StringBuilder()
-            try {
-                val reader = BufferedReader(FileReader(fileDictionary))
-                var str = reader.readLine()
-                while (str != null) {
-                    allWords.append(str + "\n")
-                    str = reader.readLine()
-                }
-                reader.close()
-            } catch (e: IOException) {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(this@MainActivity, "Произошла ошибка при загрузке данных из файла!"
-                        , Toast.LENGTH_LONG).show()
-                }
-            }
-            if (allWords.isNotEmpty()) {
-                realm = Realm.getInstance(config)
-                realm.executeTransactionAwait(Dispatchers.Default) { realmTransaction ->
-                    for (strWord in allWords.split("\n")) {
-                        if (strWord.isEmpty()) continue
-                        val originalWord = strWord.split("=")[0]
-                        val translationWord = strWord.split("=")[1]
-                        val word = realmTransaction.where(Word::class.java)
-                            .equalTo("original", originalWord).findFirst()
-                        if (word != null) {
-                            word.translation = translationWord
-                            realmTransaction.copyToRealmOrUpdate(word)
-                        } else
-                            realmTransaction.copyToRealmOrUpdate(Word(ObjectId().toHexString()
-                                , originalWord, translationWord))
-                    }
-                }
-                realm.close()
-                scope.launch {
-                    if (originalText.text.isNotEmpty() || translationText.text.isEmpty())
-                        showOriginalAndTranslation("*${originalText.text}*", "original")
-                    else
-                        showOriginalAndTranslation("*${translationText.text}*", "translation")
-                }
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(this@MainActivity, "Данные из файла успешно загружены!"
-                        , Toast.LENGTH_LONG).show()
-                }
-            } else
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(this@MainActivity, "В файле не обнаружено данных для загрузки!"
-                        , Toast.LENGTH_LONG).show()
-                }
-        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        //Инициализация realm и отображение всего списка слов
+        //Инициализация realm, данных и отображение всего списка слов
         Realm.init(this)
         (application as MyDictionaryApp).myDictionaryComponent.injectMainActivity(this)
-        scope.launch {
-            showOriginalAndTranslation("", "original")
-        }
+        getAndShowWords("", "original")
         //Фильтр по введенным символам
         originalText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
@@ -166,10 +76,7 @@ class MainActivity : AppCompatActivity() {
             override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun afterTextChanged(text: Editable?) {
-                if (isRealmClosed)
-                    scope.launch {
-                        showOriginalAndTranslation("*${text.toString()}*", "original")
-                    }
+                getAndShowWords("*${text.toString()}*", "original")
             }
         })
         translationText.addTextChangedListener(object : TextWatcher {
@@ -178,10 +85,7 @@ class MainActivity : AppCompatActivity() {
             override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun afterTextChanged(text: Editable?) {
-                if (isRealmClosed)
-                    scope.launch {
-                        showOriginalAndTranslation("*${text.toString()}*", "translation")
-                    }
+                getAndShowWords("*${text.toString()}*", "translation")
             }
         })
         //Ограничение на количество слов
@@ -191,56 +95,23 @@ class MainActivity : AppCompatActivity() {
             override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun afterTextChanged(text: Editable?) {
-                if (isRealmClosed)
-                    scope.launch {
-                        if (originalText.text.isNotEmpty() || translationText.text.isEmpty())
-                            showOriginalAndTranslation("*${originalText.text}*", "original")
-                        else
-                            showOriginalAndTranslation("*${translationText.text}*", "translation")
-                    }
+                showOriginalOrTranslation()
             }
         })
         //Добавление одного слова
         addWord.setOnClickListener {
-            val originalText = originalText.text.toString()
-            val translationText = translationText.text.toString()
             scope.launch {
-                realm = Realm.getInstance(config)
-                realm.executeTransactionAwait(Dispatchers.Default) { realmTransaction ->
-                    val word = realmTransaction.where(Word::class.java)
-                        .equalTo("original", originalText).findFirst()
-                    if (word != null) {
-                        word.translation = translationText
-                        realmTransaction.copyToRealmOrUpdate(word)
-                    } else
-                        realmTransaction.copyToRealmOrUpdate(Word(ObjectId().toHexString()
-                            , originalText, translationText))
-                }
-                realm.close()
-                showOriginalAndTranslation("*${originalText}*", "original")
+                mainPresenter.addWord(originalText.text.toString(), translationText.text.toString())
+                showMessage(mainPresenter.message)
+                getAndShowWords("*${originalText.text}*", "original")
             }
         }
         //Удаление слова по введенному слову в поле Слово
         deleteWord.setOnClickListener {
-            val originalText = originalText.text.toString()
             scope.launch {
-                var isWordExisted = true
-                realm = Realm.getInstance(config)
-                realm.executeTransactionAwait(Dispatchers.Default) { realmTransaction ->
-                    val word = realmTransaction.where(Word::class.java)
-                        .equalTo("original", originalText).sort("original").findFirst()
-                    if (word != null)
-                        word.deleteFromRealm()
-                    else
-                        isWordExisted = false
-                }
-                realm.close()
-                if (!isWordExisted)
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(this@MainActivity, "Не найдено слово для удаления!"
-                            , Toast.LENGTH_LONG).show()
-                    }
-                showOriginalAndTranslation("*${originalText}*", "original")
+                mainPresenter.deleteWord(originalText.text.toString())
+                showMessage(mainPresenter.message)
+                getAndShowWords("*${originalText.text}*", "original")
             }
         }
         //Сохранение слов в файл
@@ -251,11 +122,11 @@ class MainActivity : AppCompatActivity() {
                     val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
                     intent.addCategory("android.intent.category.DEFAULT")
                     intent.data = Uri.parse(String.format("package:%s", this.packageName))
-                    this.startActivityForResult(intent, REQUEST_CODE_PERMISSION_MANAGE_STORAGE)
+                    launcherManageStorage.launch(intent)
                 } catch (e: Exception) {
                     val intent = Intent()
                     intent.action = Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
-                    this.startActivityForResult(intent, REQUEST_CODE_PERMISSION_MANAGE_STORAGE)
+                    launcherManageStorage.launch(intent)
                 }
             } else
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -269,11 +140,11 @@ class MainActivity : AppCompatActivity() {
                     val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
                     intent.addCategory("android.intent.category.DEFAULT")
                     intent.data = Uri.parse(String.format("package:%s", this.packageName))
-                    this.startActivityForResult(intent, REQUEST_CODE_PERMISSION_MANAGE_STORAGE)
+                    launcherManageStorage.launch(intent)
                 } catch (e: Exception) {
                     val intent = Intent()
                     intent.action = Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
-                    this.startActivityForResult(intent, REQUEST_CODE_PERMISSION_MANAGE_STORAGE)
+                    launcherManageStorage.launch(intent)
                 }
             } else
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -281,85 +152,97 @@ class MainActivity : AppCompatActivity() {
         }
         //Отображение перевода
         showTranslation.setOnClickListener {
-            scope.launch {
-                if (originalText.text.isNotEmpty() || translationText.text.isEmpty())
-                    showOriginalAndTranslation("*${originalText.text}*", "original")
-                else
-                    showOriginalAndTranslation("*${translationText.text}*", "translation")
-            }
+            showOriginalOrTranslation()
         }
-        //Обрезание текста по фильтру
+        //Обрезание списка слов по фильтру
         cutList.setOnClickListener {
-            scope.launch {
-                val findWord =
-                    if (cutList.isChecked)
-                        ""
-                    else if (originalText.text.isNotEmpty() || translationText.text.isEmpty())
-                        "*${originalText.text}*"
-                    else
-                        "*${translationText.text}*"
-                if (originalText.text.isNotEmpty() || translationText.text.isEmpty())
-                    showOriginalAndTranslation(findWord, "original")
+            val findWord =
+                if (cutList.isChecked)
+                    ""
+                else if (originalText.text.isNotEmpty() || translationText.text.isEmpty())
+                    "*${originalText.text}*"
                 else
-                    showOriginalAndTranslation(findWord, "translation")
-            }
+                    "*${translationText.text}*"
+            if (originalText.text.isNotEmpty() || translationText.text.isEmpty())
+                getAndShowWords(findWord, "original")
+            else
+                getAndShowWords(findWord, "translation")
         }
     }
 
-    suspend fun showOriginalAndTranslation(findWord: String, fieldName: String) {
+    fun getAndShowWords(findWord: String, fieldName: String) {
+        scope.launch {
+            mainPresenter.getListWords(findWord, fieldName, cutList.isChecked)
+            showListWords(mainPresenter.listWords, fieldName)
+        }
+    }
+
+    fun showOriginalOrTranslation() {
+        if (originalText.text.isNotEmpty() || translationText.text.isEmpty())
+            getAndShowWords("*${originalText.text}*", "original")
+        else
+            getAndShowWords("*${translationText.text}*", "translation")
+    }
+
+    suspend fun showListWords(listWords: List<WordForView>, fieldName: String) {
+        var indexCut = 0
         val countWordShowString = countWordsText.text.toString()
-        var countWordsShow =
+        val countWordsShow =
             when {
                 countWordShowString.isEmpty() -> -1
                 else -> countWordShowString.toInt()
             }
-        isRealmClosed = false
         val allWords = StringBuilder()
-        realm = Realm.getInstance(config)
-        realm.executeTransactionAwait(Dispatchers.Default) { realmTransaction ->
-            var listWords: List<Word> = if (findWord.isEmpty() || cutList.isChecked)
-                realmTransaction.where(Word::class.java).sort(fieldName).findAll()
-            else
-                realmTransaction.where(Word::class.java).like(fieldName, findWord, Case.INSENSITIVE)
-                    .sort(fieldName).findAll()
-            if (listWords.isNotEmpty()) {
-                if (cutList.isChecked) {
-                    val indexCut =
-                        if (fieldName == "original")
-                            listWords.indexOf(listWords.find { word -> word.original.startsWith(originalText.text) })
-                        else
-                            listWords.indexOf(listWords.find { word -> word.translation.startsWith(translationText.text) })
-                    listWords = listWords.subList(indexCut, listWords.lastIndex + 1)
-                }
-                if (countWordsShow == -1 || countWordsShow > listWords.size)
-                    countWordsShow = listWords.size
-                for (index in 0 until countWordsShow) {
-                    val word = listWords[index]
-                    if (showTranslation.isChecked) {
-                        if (fieldName == "original")
-                            allWords.append(" ${word.original} = ${word.translation}\n")
-                        else
-                            allWords.append(" ${word.translation} = ${word.original}\n")
-                    } else if (fieldName == "translation")
-                        allWords.append(" ${word.translation}\n")
+        if (listWords.isNotEmpty()) {
+            if (cutList.isChecked) {
+                indexCut =
+                    if (fieldName == "original")
+                        listWords.indexOf(listWords.find { word -> word.original.startsWith(originalText.text) })
                     else
-                        allWords.append(" ${word.original}\n")
-                }
+                        listWords.indexOf(listWords.find { word -> word.translation.startsWith(translationText.text) })
+            }
+            var lastIndex = indexCut + countWordsShow
+            if (countWordsShow == -1 || lastIndex > listWords.size)
+                lastIndex = listWords.size
+            for (index in indexCut until lastIndex) {
+                val word = listWords[index]
+                if (showTranslation.isChecked) {
+                    if (fieldName == "original")
+                        allWords.append(" ${word.original} = ${word.translation}\n")
+                    else
+                        allWords.append(" ${word.translation} = ${word.original}\n")
+                } else if (fieldName == "translation")
+                    allWords.append(" ${word.translation}\n")
+                else
+                    allWords.append(" ${word.original}\n")
             }
         }
-        realm.close()
         withContext(Dispatchers.Main) {
             showWordsText.text = allWords.toString()
             countWords.text = "Слов: ${allWords.split("\n").size - 1}"
         }
-        isRealmClosed = true
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == REQUEST_CODE_PERMISSION_MANAGE_STORAGE) {
-            if (numOperation == REQUEST_CODE_PERMISSION_WRITE_STORAGE) writeFile()
-            else if (numOperation == REQUEST_CODE_PERMISSION_READ_STORAGE) readFile()
+    private suspend fun showMessage(message: String) {
+        withContext(Dispatchers.Main) {
+            Toast.makeText(this@MainActivity, message, Toast.LENGTH_LONG).show()
         }
-        super.onActivityResult(requestCode, resultCode, data)
     }
+
+    private val launcherManageStorage =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (numOperation == REQUEST_CODE_PERMISSION_WRITE_STORAGE) {
+                scope.launch {
+                    mainPresenter.saveWordsInFile(this@MainActivity)
+                    showMessage(mainPresenter.message)
+                    showOriginalOrTranslation()
+                }
+            } else if (numOperation == REQUEST_CODE_PERMISSION_READ_STORAGE) {
+                scope.launch {
+                    mainPresenter.loadWordsFromFile(this@MainActivity)
+                    showMessage(mainPresenter.message)
+                    showOriginalOrTranslation()
+                }
+            }
+        }
 }
