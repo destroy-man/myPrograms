@@ -45,14 +45,14 @@ class MainActivity : AppCompatActivity() {
         when (requestCode) {
             REQUEST_CODE_PERMISSION_WRITE_STORAGE -> {
                 scope.launch {
-                    mainPresenter.saveWordsInFile(this@MainActivity)
+                    mainPresenter.saveWordsInFile()
                     showMessage(mainPresenter.message)
                     showOriginalOrTranslation()
                 }
             }
             REQUEST_CODE_PERMISSION_READ_STORAGE -> {
                 scope.launch {
-                    mainPresenter.loadWordsFromFile(this@MainActivity)
+                    mainPresenter.loadWordsFromFile()
                     showMessage(mainPresenter.message)
                     showOriginalOrTranslation()
                 }
@@ -184,7 +184,7 @@ class MainActivity : AppCompatActivity() {
             getAndShowWords("*${translationText.text}*", "translation")
     }
 
-    suspend fun showListWords(listWords: List<WordForView>, fieldName: String) {
+    private suspend fun showListWords(listWords: List<WordForView>, fieldName: String) {
         var indexCut = 0
         val countWordShowString = countWordsText.text.toString()
         val countWordsShow =
@@ -194,13 +194,12 @@ class MainActivity : AppCompatActivity() {
             }
         val allWords = StringBuilder()
         if (listWords.isNotEmpty()) {
-            if (cutList.isChecked) {
+            if (cutList.isChecked)
                 indexCut =
                     if (fieldName == "original")
                         listWords.indexOf(listWords.find { word -> word.original.startsWith(originalText.text) })
                     else
                         listWords.indexOf(listWords.find { word -> word.translation.startsWith(translationText.text) })
-            }
             var lastIndex = indexCut + countWordsShow
             if (countWordsShow == -1 || lastIndex > listWords.size)
                 lastIndex = listWords.size
@@ -233,13 +232,13 @@ class MainActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (numOperation == REQUEST_CODE_PERMISSION_WRITE_STORAGE) {
                 scope.launch {
-                    mainPresenter.saveWordsInFile(this@MainActivity)
+                    mainPresenter.saveWordsInFile()
                     showMessage(mainPresenter.message)
                     showOriginalOrTranslation()
                 }
             } else if (numOperation == REQUEST_CODE_PERMISSION_READ_STORAGE) {
                 scope.launch {
-                    mainPresenter.loadWordsFromFile(this@MainActivity)
+                    mainPresenter.loadWordsFromFile()
                     showMessage(mainPresenter.message)
                     showOriginalOrTranslation()
                 }

@@ -1,6 +1,5 @@
 package ru.korobeynikov.mydictionary
 
-import android.content.Context
 import android.os.Environment
 import io.realm.Case
 import io.realm.Realm
@@ -15,8 +14,7 @@ class MainModel(private var config: RealmConfiguration) {
     lateinit var realm: Realm
     var isRealmClosed = true
 
-    suspend fun writeFile(context: Context): String {
-        //val directory = File(context.getExternalFilesDir(""), "MyDictionary")
+    suspend fun writeFile(): String {
         val directory = File(Environment.getExternalStorageDirectory().absolutePath, "My dictionary")
         if (!directory.exists())
             directory.mkdirs()
@@ -24,7 +22,7 @@ class MainModel(private var config: RealmConfiguration) {
         val allWords = StringBuilder()
         realm = Realm.getInstance(config)
         realm.executeTransactionAwait(Dispatchers.Default) { realmTransaction ->
-            val listWords = realmTransaction.where(Word::class.java).sort("original").findAll()
+            val listWords: List<Word> = realmTransaction.where(Word::class.java).sort("original").findAll()
             if (listWords.isNotEmpty())
                 for (word in listWords)
                     allWords.append("${word.original}=${word.translation}\n")
@@ -43,8 +41,7 @@ class MainModel(private var config: RealmConfiguration) {
             "Нет данных для сохранения!"
     }
 
-    suspend fun readFile(context: Context): String {
-        //val directory = File(context.getExternalFilesDir(null), "MyDictionary")
+    suspend fun readFile(): String {
         val directory = File(Environment.getExternalStorageDirectory().absolutePath, "My dictionary")
         if (!directory.exists())
             directory.mkdirs()
@@ -74,9 +71,8 @@ class MainModel(private var config: RealmConfiguration) {
                         word.translation = translationWord
                         realmTransaction.copyToRealmOrUpdate(word)
                     } else
-                        realmTransaction.copyToRealmOrUpdate(Word(ObjectId().toHexString(),
-                            originalWord,
-                            translationWord))
+                        realmTransaction.copyToRealmOrUpdate(Word(ObjectId().toHexString()
+                            , originalWord, translationWord))
                 }
             }
             realm.close()
@@ -97,9 +93,8 @@ class MainModel(private var config: RealmConfiguration) {
                     realmTransaction.copyToRealmOrUpdate(word)
                     message = "Слово изменено в словаре!"
                 } else {
-                    realmTransaction.copyToRealmOrUpdate(Word(ObjectId().toHexString(),
-                        originalText,
-                        translationText))
+                    realmTransaction.copyToRealmOrUpdate(Word(ObjectId().toHexString()
+                        , originalText, translationText))
                     message = "Слово добавлено в словарь!"
                 }
             }
@@ -131,11 +126,7 @@ class MainModel(private var config: RealmConfiguration) {
             "Для удаления слова из словаря нужно заполнить поле Слово!"
     }
 
-    suspend fun getWordsFromRealm(
-        findWord: String,
-        fieldName: String,
-        cutList: Boolean,
-    ): List<WordForView> {
+    suspend fun getWordsFromRealm(findWord: String, fieldName: String, cutList: Boolean, ): List<WordForView> {
         return if (isRealmClosed) {
             isRealmClosed = false
             val listWordsForView = ArrayList<WordForView>()
@@ -145,8 +136,7 @@ class MainModel(private var config: RealmConfiguration) {
                     realmTransaction.where(Word::class.java).sort(fieldName).findAll()
                 else
                     realmTransaction.where(Word::class.java)
-                        .like(fieldName, findWord, Case.INSENSITIVE)
-                        .sort(fieldName).findAll()
+                        .like(fieldName, findWord, Case.INSENSITIVE).sort(fieldName).findAll()
                 if (listWords.isNotEmpty()) {
                     for (word in listWords)
                         listWordsForView.add(WordForView(word.original, word.translation))

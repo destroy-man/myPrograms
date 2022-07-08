@@ -1,18 +1,16 @@
 package ru.korobeynikov.mydictionary
 
-import android.content.Context
-
 class MainPresenter(private var mainModel: MainModel) {
 
     lateinit var listWords: List<WordForView>
     lateinit var message: String
 
-    suspend fun saveWordsInFile(context: Context) {
-        message = mainModel.writeFile(context)
+    suspend fun saveWordsInFile() {
+        message = mainModel.writeFile()
     }
 
-    suspend fun loadWordsFromFile(context: Context) {
-        message = mainModel.readFile(context)
+    suspend fun loadWordsFromFile() {
+        message = mainModel.readFile()
     }
 
     suspend fun addWord(originalText: String, translationText: String) {
