@@ -1,6 +1,5 @@
 package ru.korobeynikov.mydictionary
 
-import android.os.Environment
 import io.realm.Case
 import io.realm.Realm
 import io.realm.RealmConfiguration
@@ -14,8 +13,8 @@ class MainModel(private var config: RealmConfiguration) {
     lateinit var realm: Realm
     var isRealmClosed = true
 
-    suspend fun writeFile(): String {
-        val directory = File(Environment.getExternalStorageDirectory().absolutePath, "My dictionary")
+    suspend fun writeFile(path: String): String {
+        val directory = File(path, "My dictionary")
         if (!directory.exists())
             directory.mkdirs()
         val fileDictionary = File(directory, "List words.txt")
@@ -41,8 +40,8 @@ class MainModel(private var config: RealmConfiguration) {
             "Нет данных для сохранения!"
     }
 
-    suspend fun readFile(): String {
-        val directory = File(Environment.getExternalStorageDirectory().absolutePath, "My dictionary")
+    suspend fun readFile(path: String): String {
+        val directory = File(path, "My dictionary")
         if (!directory.exists())
             directory.mkdirs()
         val fileDictionary = File(directory, "List words.txt")

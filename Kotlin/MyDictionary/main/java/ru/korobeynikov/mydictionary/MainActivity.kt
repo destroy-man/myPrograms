@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
 import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
@@ -45,14 +46,14 @@ class MainActivity : AppCompatActivity() {
         when (requestCode) {
             REQUEST_CODE_PERMISSION_WRITE_STORAGE -> {
                 scope.launch {
-                    mainPresenter.saveWordsInFile()
+                    mainPresenter.saveWordsInFile(Environment.getExternalStorageDirectory().absolutePath)
                     showMessage(mainPresenter.message)
                     showOriginalOrTranslation()
                 }
             }
             REQUEST_CODE_PERMISSION_READ_STORAGE -> {
                 scope.launch {
-                    mainPresenter.loadWordsFromFile()
+                    mainPresenter.loadWordsFromFile(Environment.getExternalStorageDirectory().absolutePath)
                     showMessage(mainPresenter.message)
                     showOriginalOrTranslation()
                 }
@@ -232,13 +233,13 @@ class MainActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (numOperation == REQUEST_CODE_PERMISSION_WRITE_STORAGE) {
                 scope.launch {
-                    mainPresenter.saveWordsInFile()
+                    mainPresenter.saveWordsInFile(Environment.getExternalStorageDirectory().absolutePath)
                     showMessage(mainPresenter.message)
                     showOriginalOrTranslation()
                 }
             } else if (numOperation == REQUEST_CODE_PERMISSION_READ_STORAGE) {
                 scope.launch {
-                    mainPresenter.loadWordsFromFile()
+                    mainPresenter.loadWordsFromFile(Environment.getExternalStorageDirectory().absolutePath)
                     showMessage(mainPresenter.message)
                     showOriginalOrTranslation()
                 }

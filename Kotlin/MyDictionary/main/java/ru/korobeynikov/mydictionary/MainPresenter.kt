@@ -5,12 +5,12 @@ class MainPresenter(private var mainModel: MainModel) {
     lateinit var listWords: List<WordForView>
     lateinit var message: String
 
-    suspend fun saveWordsInFile() {
-        message = mainModel.writeFile()
+    suspend fun saveWordsInFile(path: String) {
+        message = mainModel.writeFile(path)
     }
 
-    suspend fun loadWordsFromFile() {
-        message = mainModel.readFile()
+    suspend fun loadWordsFromFile(path: String) {
+        message = mainModel.readFile(path)
     }
 
     suspend fun addWord(originalText: String, translationText: String) {
