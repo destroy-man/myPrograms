@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="mainActivity"
+            type="ru.korobeynikov.databasegames.MainActivity" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+        <TextView
+            android:id="@+id/nameGame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/nameGameTitle"
+            app:layout_constraintBottom_toBottomOf="@id/nameGameText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/nameGameText" />
+
+        <EditText
+            android:id="@+id/nameGameText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:autofillHints=""
+            android:inputType="textPersonName"
+            android:onTextChanged="@{()->mainActivity.showGames()}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/nameGame"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/ratingGame"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/ratingGameTitle"
+            app:layout_constraintBottom_toBottomOf="@id/ratingGameText"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/ratingGameText" />
+
+        <EditText
+            android:id="@+id/ratingGameText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:autofillHints=""
+            android:inputType="number"
+            android:maxLength="2"
+            android:onTextChanged="@{()->mainActivity.showGames()}"
+            app:layout_constraintEnd_toStartOf="@id/yearGame"
+            app:layout_constraintHorizontal_weight="2"
+            app:layout_constraintStart_toEndOf="@+id/ratingGame"
+            app:layout_constraintTop_toBottomOf="@id/nameGameText" />
+
+        <TextView
+            android:id="@+id/yearGame"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/yearGameTitle"
+            app:layout_constraintBottom_toBottomOf="@id/ratingGameText"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@+id/ratingGameText"
+            app:layout_constraintTop_toTopOf="@id/ratingGameText" />
+
+        <EditText
+            android:id="@+id/yearGameText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:autofillHints=""
+            android:inputType="number"
+            android:onTextChanged="@{()->mainActivity.showGames()}"
+            app:layout_constraintEnd_toStartOf="@id/genreGame"
+            app:layout_constraintHorizontal_weight="2"
+            app:layout_constraintStart_toEndOf="@+id/yearGame"
+            app:layout_constraintTop_toBottomOf="@id/nameGameText" />
+
+        <TextView
+            android:id="@+id/genreGame"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/genreGameTitle"
+            app:layout_constraintBottom_toBottomOf="@id/ratingGameText"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@+id/yearGameText"
+            app:layout_constraintTop_toTopOf="@id/ratingGameText" />
+
+        <Spinner
+            android:id="@+id/genreGameList"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:entries="@array/genres"
+            android:onItemSelected="@{()->mainActivity.showGames()}"
+            app:layout_constraintBottom_toBottomOf="@id/ratingGameText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_weight="2"
+            app:layout_constraintStart_toEndOf="@id/genreGame"
+            app:layout_constraintTop_toTopOf="@id/ratingGameText" />
+
+        <Button
+            android:id="@+id/addGame"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:onClick="@{()->mainActivity.addGame()}"
+            android:text="@string/addGameTitle"
+            app:layout_constraintEnd_toStartOf="@id/changeGame"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ratingGameText" />
+
+        <Button
+            android:id="@+id/changeGame"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:onClick="@{()->mainActivity.changeGame()}"
+            android:text="@string/changeGameTitle"
+            app:layout_constraintEnd_toStartOf="@id/deleteGame"
+            app:layout_constraintStart_toEndOf="@id/addGame"
+            app:layout_constraintTop_toBottomOf="@id/ratingGameText" />
+
+        <Button
+            android:id="@+id/deleteGame"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:onClick="@{()->mainActivity.deleteGame()}"
+            android:text="@string/deleteGameTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/changeGame"
+            app:layout_constraintTop_toBottomOf="@id/ratingGameText" />
+
+        <Button
+            android:id="@+id/saveGamesInFile"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:onClick="@{()->mainActivity.saveGamesInFile()}"
+            android:text="@string/saveGamesTitle"
+            app:layout_constraintEnd_toStartOf="@id/loadGamesFromFile"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/addGame" />
+
+        <Button
+            android:id="@+id/loadGamesFromFile"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:onClick="@{()->mainActivity.loadGamesFromFile()}"
+            android:text="@string/loadGamesTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/saveGamesInFile"
+            app:layout_constraintTop_toBottomOf="@id/addGame" />
+
+        <CheckBox
+            android:id="@+id/isSort"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onCheckedChanged="@{()->mainActivity.showGames()}"
+            android:text="@string/sortTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/saveGamesInFile" />
+
+        <Button
+            android:id="@+id/clearAllFields"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:onClick="@{()->mainActivity.clearAllFields()}"
+            android:text="@string/clearAllFieldsTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/isSort"
+            app:layout_constraintTop_toBottomOf="@id/saveGamesInFile" />
+
+        <ScrollView
+            android:id="@+id/scrollShowGamesText"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:fillViewport="true"
+            android:scrollbars="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/isSort">
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/showGamesText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+
+            </HorizontalScrollView>
+        </ScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

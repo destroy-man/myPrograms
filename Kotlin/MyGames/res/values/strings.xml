@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">MyGames</string>
+    <string name="nameGameTitle">Название:</string>
+    <string name="ratingGameTitle">Оценка:</string>
+    <string name="yearGameTitle">Год:</string>
+    <string name="genreGameTitle">Жанр:</string>
+    <string name="addGameTitle">Добавить</string>
+    <string name="changeGameTitle">Изменить</string>
+    <string name="deleteGameTitle">Удалить</string>
+    <string name="saveGamesTitle">Сохранить</string>
+    <string name="loadGamesTitle">Загрузить</string>
+    <string name="sortTitle">Сортировать</string>
+    <string name="clearAllFieldsTitle">Очистить поля</string>
+    <string-array name="genres">
+        <item>"-"</item>
+        <item>"FPS"</item>
+        <item>"TPS"</item>
+        <item>"Slasher"</item>
+        <item>"Stealth"</item>
+        <item>"RTS"</item>
+        <item>"TBS"</item>
+        <item>"ARPG"</item>
+        <item>"CRPG"</item>
+        <item>"Arcade"</item>
+        <item>"Adventure"</item>
+        <item>"Other"</item>
+    </string-array>
+</resources>
