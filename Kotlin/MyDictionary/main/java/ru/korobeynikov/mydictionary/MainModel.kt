@@ -11,7 +11,6 @@ import java.io.*
 class MainModel(private var config: RealmConfiguration) {
 
     lateinit var realm: Realm
-    var isRealmClosed = true
 
     suspend fun writeFile(path: String): String {
         val directory = File(path, "My dictionary")
@@ -70,8 +69,8 @@ class MainModel(private var config: RealmConfiguration) {
                         word.translation = translationWord
                         realmTransaction.copyToRealmOrUpdate(word)
                     } else
-                        realmTransaction.copyToRealmOrUpdate(Word(ObjectId().toHexString()
-                            , originalWord, translationWord))
+                        realmTransaction.copyToRealmOrUpdate(Word(ObjectId().toHexString(),
+                            originalWord, translationWord))
                 }
             }
             realm.close()
@@ -92,8 +91,8 @@ class MainModel(private var config: RealmConfiguration) {
                     realmTransaction.copyToRealmOrUpdate(word)
                     message = "Слово изменено в словаре!"
                 } else {
-                    realmTransaction.copyToRealmOrUpdate(Word(ObjectId().toHexString()
-                        , originalText, translationText))
+                    realmTransaction.copyToRealmOrUpdate(Word(ObjectId().toHexString(),
+                        originalText, translationText))
                     message = "Слово добавлено в словарь!"
                 }
             }
@@ -120,32 +119,28 @@ class MainModel(private var config: RealmConfiguration) {
             realm.close()
             if (!isWordExisted)
                 "Не найдено слово для удаления!"
-            "Слово удалено из словаря!"
+            else
+                "Слово удалено из словаря!"
         } else
             "Для удаления слова из словаря нужно заполнить поле Слово!"
     }
 
     suspend fun getWordsFromRealm(findWord: String, fieldName: String, cutList: Boolean, ): List<WordForView> {
-        return if (isRealmClosed) {
-            isRealmClosed = false
-            val listWordsForView = ArrayList<WordForView>()
-            realm = Realm.getInstance(config)
-            realm.executeTransactionAwait(Dispatchers.Default) { realmTransaction ->
-                val listWords = if (findWord.isEmpty() || cutList)
-                    realmTransaction.where(Word::class.java).sort(fieldName).findAll()
-                else
-                    realmTransaction.where(Word::class.java)
-                        .like(fieldName, findWord, Case.INSENSITIVE).sort(fieldName).findAll()
-                if (listWords.isNotEmpty()) {
-                    for (word in listWords)
-                        listWordsForView.add(WordForView(word.original, word.translation))
-                }
+        val listWordsForView = ArrayList<WordForView>()
+        realm = Realm.getInstance(config)
+        realm.executeTransactionAwait(Dispatchers.Default) { realmTransaction ->
+            val listWords = if (findWord.isEmpty() || cutList)
+                realmTransaction.where(Word::class.java).sort(fieldName).findAll()
+            else
+                realmTransaction.where(Word::class.java)
+                    .like(fieldName, "*$findWord*", Case.INSENSITIVE).sort(fieldName).findAll()
+            if (listWords.isNotEmpty()) {
+                for (word in listWords)
+                    listWordsForView.add(WordForView(word.original, word.translation))
             }
-            realm.close()
-            isRealmClosed = true
-            listWordsForView
-        } else
-            emptyList()
+        }
+        realm.close()
+        return listWordsForView
     }
 }
 

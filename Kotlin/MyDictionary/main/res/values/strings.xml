@@ -1,12 +1,12 @@
 <resources>
     <string name="app_name">MyDictionary</string>
-    <string name="originalLabel">Слово:</string>
-    <string name="translationLabel">Перевод:</string>
-    <string name="addWordText">Добавить слово в словарь</string>
-    <string name="deleteWordText">Удалить слово из словаря</string>
-    <string name="saveWordsText">Сохранить слова в файл</string>
-    <string name="loadWordText">Добавить слова из файла</string>
-    <string name="showTranslationText">Показать перевод</string>
-    <string name="cutListText">Обрезать список по фильтру</string>
-    <string name="countWordsLabelText">Количество слов:</string>
+    <string name="originalTitle">Слово:</string>
+    <string name="translationTitle">Перевод:</string>
+    <string name="countWordsTitle">Количество слов:</string>
+    <string name="addWordTitle">Добавить слово в словарь</string>
+    <string name="deleteWordTitle">Удалить слово из словаря</string>
+    <string name="saveWordsTitle">Сохранить слова в файл</string>
+    <string name="loadWordTitle">Добавить слова из файла</string>
+    <string name="showTranslationTitle">Показать перевод</string>
+    <string name="cutListTitle">Обрезать список</string>
 </resources>

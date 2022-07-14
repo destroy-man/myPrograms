@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mainLinearLayout"
@@ -8,170 +8,142 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <LinearLayout
-        android:id="@+id/originalLinearLayout"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/original"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:text="@string/originalTitle"
+        app:layout_constraintBottom_toBottomOf="@id/originalText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/originalText" />
 
-        <TextView
-            android:id="@+id/original"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:text="@string/originalLabel" />
-
-        <EditText
-            android:id="@+id/originalText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:inputType="textPersonName" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/translationLinearLayout"
-        android:layout_width="match_parent"
+    <EditText
+        android:id="@+id/originalText"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/original"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/translation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:text="@string/translationLabel" />
-
-        <EditText
-            android:id="@+id/translationText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/countWordsLinearLayout"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/translation"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:text="@string/translationTitle"
+        app:layout_constraintBottom_toBottomOf="@id/translationText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/translationText" />
 
-        <TextView
-            android:id="@+id/countWordsLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:text="@string/countWordsLabelText" />
-
-        <EditText
-            android:id="@+id/countWordsText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:inputType="number" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/buttonsLinearLayout"
-        android:layout_width="match_parent"
+    <EditText
+        android:id="@+id/translationText"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/translation"
+        app:layout_constraintTop_toBottomOf="@id/originalText" />
 
-        <Button
-            android:id="@+id/addWord"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/addWordText" />
-
-        <Button
-            android:id="@+id/deleteWord"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/deleteWordText" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/buttonsFileLinearLayout"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/countWordsLabel"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:text="@string/countWordsTitle"
+        app:layout_constraintBottom_toBottomOf="@id/countWordsText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/countWordsText" />
 
-        <Button
-            android:id="@+id/saveWordsInFile"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/saveWordsText" />
-
-        <Button
-            android:id="@+id/loadWordsFromFile"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/loadWordText" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/showWordsLinearLayout"
-        android:layout_width="match_parent"
+    <EditText
+        android:id="@+id/countWordsText"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:inputType="number"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/countWordsLabel"
+        app:layout_constraintTop_toBottomOf="@id/translationText" />
 
-        <CheckBox
-            android:id="@+id/showTranslation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:checked="true"
-            android:text="@string/showTranslationText" />
+    <Button
+        android:id="@+id/addWord"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/addWordTitle"
+        app:layout_constraintEnd_toStartOf="@id/deleteWord"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/countWordsText" />
 
-        <CheckBox
-            android:id="@+id/cutList"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/cutListText" />
+    <Button
+        android:id="@+id/deleteWord"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/deleteWordTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/addWord"
+        app:layout_constraintTop_toBottomOf="@id/countWordsText" />
 
-        <TextView
-            android:id="@+id/countWords"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0" />
+    <Button
+        android:id="@+id/saveWordsInFile"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/saveWordsTitle"
+        app:layout_constraintEnd_toStartOf="@id/loadWordsFromFile"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/addWord" />
 
-    </LinearLayout>
+    <Button
+        android:id="@+id/loadWordsFromFile"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/loadWordTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/saveWordsInFile"
+        app:layout_constraintTop_toBottomOf="@id/addWord" />
 
-    <LinearLayout
-        android:id="@+id/showWordsTextLinearLayout"
+    <CheckBox
+        android:id="@+id/showTranslation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:text="@string/showTranslationTitle"
+        app:layout_constraintEnd_toStartOf="@id/cutList"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/saveWordsInFile" />
+
+    <CheckBox
+        android:id="@+id/cutList"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/cutListTitle"
+        app:layout_constraintEnd_toStartOf="@id/countWords"
+        app:layout_constraintStart_toEndOf="@id/showTranslation"
+        app:layout_constraintTop_toBottomOf="@id/saveWordsInFile" />
+
+    <TextView
+        android:id="@+id/countWords"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@id/showTranslation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/showTranslation" />
+
+    <ScrollView
+        android:id="@+id/scrollShowWordsText"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/showTranslation">
 
-        <ScrollView
-            android:id="@+id/scrollShowWordsText"
-            android:layout_width="fill_parent"
-            android:layout_height="match_parent"
-            android:scrollbars="vertical"
-            android:fillViewport="true">
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+            <TextView
+                android:id="@+id/showWordsText"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
 
-                <TextView
-                    android:id="@+id/showWordsText"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1" />
+        </HorizontalScrollView>
+    </ScrollView>
 
-            </HorizontalScrollView>
-        </ScrollView>
-    </LinearLayout>
-
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
