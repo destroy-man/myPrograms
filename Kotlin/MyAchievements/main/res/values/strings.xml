@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">MyAchievements</string>
+    <string name="titleId">ID игры:</string>
+    <string name="titleSearch">Найти</string>
+    <string name="titleAchievements">Достижения:</string>
+    <string name="titlePercent">Процент: </string>
+    <string name="titleNameGame">Название игры:</string>
+    <string name="titleDate">Дата получения достижения:</string>
+    <string name="titleTime">Время получения достижения:</string>
+    <string name="titleAdd">Добавить</string>
+    <string name="titleChange">Изменить</string>
+    <string name="titleDelete">Удалить</string>
+    <string name="titleSave">Сохранить</string>
+    <string name="titleLoad">Загрузить</string>
+    <string name="titleUpdate">Обновить</string>
+</resources>

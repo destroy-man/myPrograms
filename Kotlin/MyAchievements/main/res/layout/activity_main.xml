@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".achievement.MainActivity">
+
+        <TextView
+            android:id="@+id/labelId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/titleId"
+            app:layout_constraintBottom_toBottomOf="@id/textId"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/textId" />
+
+        <EditText
+            android:id="@+id/textId"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            app:layout_constraintEnd_toStartOf="@id/btnSearch"
+            app:layout_constraintStart_toEndOf="@+id/labelId"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/btnSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/titleSearch"
+            app:layout_constraintBottom_toBottomOf="@id/textId"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textId"
+            app:layout_constraintTop_toTopOf="@+id/textId" />
+
+        <TextView
+            android:id="@+id/textAchievements"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/titleAchievements"
+            app:layout_constraintBottom_toBottomOf="@id/listAchievements"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/listAchievements" />
+
+        <Spinner
+            android:id="@+id/listAchievements"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textAchievements"
+            app:layout_constraintTop_toBottomOf="@id/textId" />
+
+        <TextView
+            android:id="@+id/textPercent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/titlePercent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/listAchievements" />
+
+        <TextView
+            android:id="@+id/labelNameGame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/titleNameGame"
+            app:layout_constraintBottom_toBottomOf="@id/textNameGame"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/textNameGame" />
+
+        <EditText
+            android:id="@+id/textNameGame"
+            android:layout_width="0pt"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/labelNameGame"
+            app:layout_constraintTop_toBottomOf="@id/textPercent" />
+
+        <TextView
+            android:id="@+id/labelDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/titleDate"
+            app:layout_constraintBottom_toBottomOf="@id/textDate"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/textDate" />
+
+        <EditText
+            android:id="@+id/textDate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/labelDate"
+            app:layout_constraintTop_toBottomOf="@id/textNameGame" />
+
+        <TextView
+            android:id="@+id/labelTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/titleTime"
+            app:layout_constraintBottom_toBottomOf="@id/textTime"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/textTime" />
+
+        <EditText
+            android:id="@+id/textTime"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:inputType="time"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/labelTime"
+            app:layout_constraintTop_toBottomOf="@id/textDate" />
+
+        <Button
+            android:id="@+id/btnAdd"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/titleAdd"
+            android:textSize="13sp"
+            app:layout_constraintEnd_toStartOf="@id/btnChange"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textTime" />
+
+        <Button
+            android:id="@+id/btnChange"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/titleChange"
+            android:textSize="13sp"
+            app:layout_constraintEnd_toStartOf="@id/btnDelete"
+            app:layout_constraintStart_toEndOf="@id/btnAdd"
+            app:layout_constraintTop_toBottomOf="@id/textTime" />
+
+        <Button
+            android:id="@+id/btnDelete"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/titleDelete"
+            android:textSize="13sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btnChange"
+            app:layout_constraintTop_toBottomOf="@id/textTime" />
+
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/titleSave"
+            android:textSize="13sp"
+            app:layout_constraintEnd_toStartOf="@id/btnLoad"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btnAdd" />
+
+        <Button
+            android:id="@+id/btnLoad"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/titleLoad"
+            android:textSize="13sp"
+            app:layout_constraintEnd_toStartOf="@id/btnUpdate"
+            app:layout_constraintStart_toEndOf="@id/btnSave"
+            app:layout_constraintTop_toBottomOf="@id/btnAdd" />
+
+        <Button
+            android:id="@+id/btnUpdate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/titleUpdate"
+            android:textSize="13sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btnLoad"
+            app:layout_constraintTop_toBottomOf="@id/btnAdd" />
+
+        <ScrollView
+            android:id="@+id/scrollResultText"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:fillViewport="true"
+            android:scrollbars="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btnSave">
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/resultText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+
+            </HorizontalScrollView>
+        </ScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
