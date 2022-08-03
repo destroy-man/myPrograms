@@ -1,2 +1,0 @@
-class ScaryException extends Exception{
-}

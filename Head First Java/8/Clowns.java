@@ -1,2 +1,0 @@
-class Clowns extends Picasso{
-}
