@@ -1,6 +1,5 @@
 package ru.korobeynikov.mydictionary
 
-import io.realm.Case
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.realm.kotlin.executeTransactionAwait
@@ -10,141 +9,93 @@ import java.io.*
 
 class MainModel(private var config: RealmConfiguration) {
 
-    lateinit var realm: Realm
+    private lateinit var realm: Realm //объект необходимый для взаимодействия с базой данных
 
-    suspend fun writeFile(path: String): String {
-        val directory = File(path, "My dictionary")
-        if (!directory.exists())
-            directory.mkdirs()
-        val fileDictionary = File(directory, "List words.txt")
-        val allWords = StringBuilder()
+    suspend fun getWordsFromRealm(): List<String> {
+        val listWords = ArrayList<String>()
         realm = Realm.getInstance(config)
         realm.executeTransactionAwait(Dispatchers.Default) { realmTransaction ->
-            val listWords: List<Word> = realmTransaction.where(Word::class.java).sort("original").findAll()
-            if (listWords.isNotEmpty())
-                for (word in listWords)
-                    allWords.append("${word.original}=${word.translation}\n")
+            val listWordsFromRealm =
+                realmTransaction.where(Word::class.java).sort("original").findAll()
+            if (listWordsFromRealm.isNotEmpty()) {
+                for (word in listWordsFromRealm)
+                    listWords.add("${word.original}=${word.translation}")
+            }
         }
         realm.close()
-        return if (allWords.isNotEmpty())
-            try {
-                val writer = BufferedWriter(FileWriter(fileDictionary))
-                writer.write(allWords.toString())
-                writer.close()
-                "Сохранение в файл успешно завершено!"
-            } catch (e: IOException) {
-                "Произошла ошибка при сохранении в файл!"
-            }
-        else
-            "Нет данных для сохранения!"
+        return listWords
     }
 
-    suspend fun readFile(path: String): String {
+    suspend fun addWordInRealm(originalText: String, translationText: String) {
+        realm = Realm.getInstance(config)
+        realm.executeTransactionAwait(Dispatchers.Default) { realmTransaction ->
+            addWord(realmTransaction, originalText, translationText)
+        }
+        realm.close()
+    }
+
+    suspend fun deleteWordFromRealm(originalText: String) {
+        realm = Realm.getInstance(config)
+        realm.executeTransactionAwait(Dispatchers.Default) { realmTransaction ->
+            val word = realmTransaction.where(Word::class.java).equalTo("original", originalText)
+                .sort("original").findFirst()
+            word?.deleteFromRealm()
+        }
+        realm.close()
+    }
+
+    fun saveWordsInFile(path: String, listWords: List<String>) {
+        val directory = File(path, "My dictionary")
+        if (!directory.exists())
+            directory.mkdirs()
+        val fileDictionary = File(directory, "List words.txt")
+        if (listWords.isNotEmpty()) {
+            val writer = BufferedWriter(FileWriter(fileDictionary))
+            for (word in listWords) {
+                val original = word.split("=")[0]
+                val translation = word.split("=")[1]
+                writer.write("$original=$translation")
+                writer.newLine()
+            }
+            writer.close()
+        }
+    }
+
+    suspend fun loadWordsFromFile(path: String) {
         val directory = File(path, "My dictionary")
         if (!directory.exists())
             directory.mkdirs()
         val fileDictionary = File(directory, "List words.txt")
         val allWords = StringBuilder()
-        try {
-            val reader = BufferedReader(FileReader(fileDictionary))
-            var str = reader.readLine()
-            while (str != null) {
-                allWords.append(str + "\n")
-                str = reader.readLine()
-            }
-            reader.close()
-        } catch (e: IOException) {
-            return "Произошла ошибка при загрузке данных из файла!"
+        val reader = BufferedReader(FileReader(fileDictionary))
+        var str = reader.readLine()
+        while (str != null) {
+            allWords.append("$str\n")
+            str = reader.readLine()
         }
-        return if (allWords.isNotEmpty()) {
+        reader.close()
+        if (allWords.isNotEmpty()) {
             realm = Realm.getInstance(config)
             realm.executeTransactionAwait(Dispatchers.Default) { realmTransaction ->
                 for (strWord in allWords.split("\n")) {
                     if (strWord.isEmpty()) continue
                     val originalWord = strWord.split("=")[0]
                     val translationWord = strWord.split("=")[1]
-                    val word = realmTransaction.where(Word::class.java)
-                        .equalTo("original", originalWord).findFirst()
-                    if (word != null) {
-                        word.translation = translationWord
-                        realmTransaction.copyToRealmOrUpdate(word)
-                    } else
-                        realmTransaction.copyToRealmOrUpdate(Word(ObjectId().toHexString(),
-                            originalWord, translationWord))
+                    addWord(realmTransaction, originalWord, translationWord)
                 }
             }
             realm.close()
-            "Данные из файла успешно загружены!"
-        } else
-            "В файле не обнаружено данных для загрузки!"
-    }
-
-    suspend fun addWordInRealm(originalText: String, translationText: String): String {
-        return if (originalText.isNotEmpty() && translationText.isNotEmpty()) {
-            var message = ""
-            realm = Realm.getInstance(config)
-            realm.executeTransactionAwait(Dispatchers.Default) { realmTransaction ->
-                val word = realmTransaction.where(Word::class.java)
-                    .equalTo("original", originalText).findFirst()
-                if (word != null) {
-                    word.translation = translationText
-                    realmTransaction.copyToRealmOrUpdate(word)
-                    message = "Слово изменено в словаре!"
-                } else {
-                    realmTransaction.copyToRealmOrUpdate(Word(ObjectId().toHexString(),
-                        originalText, translationText))
-                    message = "Слово добавлено в словарь!"
-                }
-            }
-            realm.close()
-            message
-        } else if (originalText.isEmpty())
-            "Для добавления слова в словарь нужно заполнить поле Слово!"
-        else
-            "Для добавления слова в словарь нужно заполнить поле Перевод!"
-    }
-
-    suspend fun deleteWordFromRealm(originalText: String): String {
-        return if (originalText.isNotEmpty()) {
-            var isWordExisted = true
-            realm = Realm.getInstance(config)
-            realm.executeTransactionAwait(Dispatchers.Default) { realmTransaction ->
-                val word = realmTransaction.where(Word::class.java)
-                    .equalTo("original", originalText).sort("original").findFirst()
-                if (word != null)
-                    word.deleteFromRealm()
-                else
-                    isWordExisted = false
-            }
-            realm.close()
-            if (!isWordExisted)
-                "Не найдено слово для удаления!"
-            else
-                "Слово удалено из словаря!"
-        } else
-            "Для удаления слова из словаря нужно заполнить поле Слово!"
-    }
-
-    suspend fun getWordsFromRealm(findWord: String, fieldName: String, cutList: Boolean, ): List<WordForView> {
-        val listWordsForView = ArrayList<WordForView>()
-        realm = Realm.getInstance(config)
-        realm.executeTransactionAwait(Dispatchers.Default) { realmTransaction ->
-            val listWords = if (findWord.isEmpty() || cutList)
-                realmTransaction.where(Word::class.java).sort(fieldName).findAll()
-            else
-                realmTransaction.where(Word::class.java)
-                    .like(fieldName, "*$findWord*", Case.INSENSITIVE).sort(fieldName).findAll()
-            if (listWords.isNotEmpty()) {
-                for (word in listWords)
-                    listWordsForView.add(WordForView(word.original, word.translation))
-            }
         }
-        realm.close()
-        return listWordsForView
+    }
+
+    private fun addWord(realmTransaction: Realm, originalText: String, translationText: String) {
+        val word =
+            realmTransaction.where(Word::class.java).equalTo("original", originalText).findFirst()
+        if (word != null) {
+            word.translation = translationText
+            realmTransaction.copyToRealmOrUpdate(word)
+        } else
+            realmTransaction.copyToRealmOrUpdate(Word(ObjectId().toHexString(),
+                originalText, translationText))
     }
 }
-
-data class WordForView(
-    var original: String,
-    var translation: String,
-)
