@@ -16,9 +16,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.*
 import ru.korobeynikov.daggercomponents.MyDictionaryApp
-import java.io.IOException
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
@@ -29,26 +27,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private var numOperation = 0 //номер операции (сохранение данных-1, загрузка данных-2)
+    private val path = Environment.getExternalStorageDirectory().absolutePath //путь к файлу
     private var findWord = "" //слово для фильтрации списка
     private var fieldName = "original" //столбец по которому будет происходить фильтрация списка
-    private val path = Environment.getExternalStorageDirectory().absolutePath //путь к файлу со словами
 
     @Inject
-    lateinit var scope: CoroutineScope //scope корутины для работы с базой данных
-
-    @Inject
-    lateinit var mainPresenter: MainPresenter //presenter, где происходит бизнес-логика приложения
+    lateinit var mainPresenter: MainPresenter //объект Presenter
 
     //Обработка разрешений (для старых версий)
-    override fun onRequestPermissionsResult(requestCode: Int,
-        permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>,
+                                            grantResults: IntArray) {
         when (requestCode) {
-            REQUEST_CODE_PERMISSION_WRITE_STORAGE -> {
-                saveWords()
-            }
-            REQUEST_CODE_PERMISSION_READ_STORAGE -> {
-                loadWords()
-            }
+            REQUEST_CODE_PERMISSION_WRITE_STORAGE -> mainPresenter.saveWords(path)
+            REQUEST_CODE_PERMISSION_READ_STORAGE -> mainPresenter.loadWords(path)
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
@@ -59,12 +50,8 @@ class MainActivity : AppCompatActivity() {
         //Инициализация realm, данных и отображение всего списка слов
         Realm.init(this)
         (application as MyDictionaryApp).myDictionaryComponent.injectMainActivity(this)
-        scope.launch {
-            mainPresenter.getListWords()
-            withContext(Dispatchers.Main) {
-                showListWords()
-            }
-        }
+        mainPresenter.attachView(this)
+        mainPresenter.getListWords()
         //Фильтр по введенным символам в поле Слово
         originalText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
@@ -74,7 +61,9 @@ class MainActivity : AppCompatActivity() {
             override fun afterTextChanged(text: Editable?) {
                 findWord = text.toString()
                 fieldName = "original"
-                showListWords()
+                val allWords = mainPresenter.getFilterListWords(findWord, fieldName,
+                    cutList.isChecked, showTranslation.isChecked, countWordsText.text.toString())
+                showListWords(allWords)
             }
         })
         //Фильтр по введенным символам в поле Перевод
@@ -86,7 +75,9 @@ class MainActivity : AppCompatActivity() {
             override fun afterTextChanged(text: Editable?) {
                 findWord = text.toString()
                 fieldName = "translation"
-                showListWords()
+                val allWords = mainPresenter.getFilterListWords(findWord, fieldName,
+                    cutList.isChecked, showTranslation.isChecked, countWordsText.text.toString())
+                showListWords(allWords)
             }
         })
         //Ограничение на количество слов
@@ -96,40 +87,26 @@ class MainActivity : AppCompatActivity() {
             override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun afterTextChanged(text: Editable?) {
-                showListWords()
+                val allWords = mainPresenter.getFilterListWords(findWord, fieldName,
+                    cutList.isChecked, showTranslation.isChecked, countWordsText.text.toString())
+                showListWords(allWords)
             }
         })
         //Добавление одного слова
         addWord.setOnClickListener {
-            if (originalText.text.isEmpty())
-                Toast.makeText(this,
-                    "Для добавления слова в словарь нужно заполнить поле Слово!",
-                    Toast.LENGTH_LONG).show()
-            else if (translationText.text.isEmpty())
-                Toast.makeText(this,
-                    "Для добавления слова в словарь нужно заполнить поле Перевод!",
-                    Toast.LENGTH_LONG).show()
+            if (originalText.text.isEmpty() || translationText.text.isEmpty())
+                Toast.makeText(this, "Для добавления слова в словарь нужно заполнить " +
+                        "поля Слово и Перевод!", Toast.LENGTH_LONG).show()
             else
-                scope.launch {
-                    mainPresenter.addWord(originalText.text.toString(),
-                        translationText.text.toString())
-                    withContext(Dispatchers.Main) {
-                        showListWords()
-                    }
-                }
+                mainPresenter.addWord(originalText.text.toString(), translationText.text.toString())
         }
         //Удаление одного слова
         deleteWord.setOnClickListener {
             if (originalText.text.isEmpty())
-                Toast.makeText(this, "Для удаления слова из словаря нужно заполнить поле Слово!",
-                    Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Для удаления слова из словаря нужно заполнить " +
+                        "поле Слово!", Toast.LENGTH_LONG).show()
             else
-                scope.launch {
-                    mainPresenter.deleteWord(originalText.text.toString())
-                    withContext(Dispatchers.Main) {
-                        showListWords()
-                    }
-                }
+                mainPresenter.deleteWord(originalText.text.toString())
         }
         //Сохранение слов в файл
         saveWordsInFile.setOnClickListener {
@@ -137,8 +114,8 @@ class MainActivity : AppCompatActivity() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 processPermission()
             } else
-                ActivityCompat.requestPermissions(this,
-                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_CODE_PERMISSION_WRITE_STORAGE)
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission
+                    .WRITE_EXTERNAL_STORAGE), REQUEST_CODE_PERMISSION_WRITE_STORAGE)
         }
         //Загрузка слов из файла
         loadWordsFromFile.setOnClickListener {
@@ -146,23 +123,25 @@ class MainActivity : AppCompatActivity() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 processPermission()
             } else
-                ActivityCompat.requestPermissions(this,
-                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_CODE_PERMISSION_READ_STORAGE)
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission
+                    .READ_EXTERNAL_STORAGE), REQUEST_CODE_PERMISSION_READ_STORAGE)
         }
         //Отображение перевода
         showTranslation.setOnClickListener {
-            showListWords()
+            val allWords = mainPresenter.getFilterListWords(findWord, fieldName, cutList.isChecked,
+                showTranslation.isChecked, countWordsText.text.toString())
+            showListWords(allWords)
         }
         //Обрезание списка слов
         cutList.setOnClickListener {
-            showListWords()
+            val allWords = mainPresenter.getFilterListWords(findWord, fieldName, cutList.isChecked,
+                showTranslation.isChecked, countWordsText.text.toString())
+            showListWords(allWords)
         }
     }
 
     //Получение и отображение списка слов
-    private fun showListWords() {
-        val allWords = mainPresenter.getFilterListWords(findWord, fieldName, cutList.isChecked,
-            showTranslation.isChecked, countWordsText.text.toString())
+    fun showListWords(allWords: StringBuilder) {
         showWordsText.text = allWords.toString()
         countWords.text = "Слов: ${allWords.split("\n").size - 1}"
     }
@@ -182,47 +161,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    //Сохранение слов
-    private fun saveWords() {
-        try {
-            mainPresenter.saveWords(path)
-            Toast.makeText(this, "Сохранение в файл успешно завершено!", Toast.LENGTH_LONG).show()
-        } catch (e: IOException) {
-            Toast.makeText(this, "Произошла ошибка при сохранении в файл!", Toast.LENGTH_LONG).show()
-        }
-    }
-
-    //Загрузка слов
-    private fun loadWords() {
-        scope.launch {
-            try {
-                mainPresenter.loadWords(path)
-                withContext(Dispatchers.Main) {
-                    showListWords()
-                    Toast.makeText(this@MainActivity, "Данные из файла успешно загружены!",
-                        Toast.LENGTH_LONG).show()
-                }
-            } catch (e: IOException) {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(this@MainActivity,
-                        "Произошла ошибка при загрузке данных из файла!", Toast.LENGTH_LONG).show()
-                }
-            }
-        }
-    }
-
-    //Объект для обработки разрешений (для новых версий)
+    //Объект для работы после получения разрешения на работу с хранилищем данных (для новых версий)
     private val launcherManageStorage =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (numOperation == REQUEST_CODE_PERMISSION_WRITE_STORAGE) {
-                saveWords()
+                mainPresenter.saveWords(path)
             } else if (numOperation == REQUEST_CODE_PERMISSION_READ_STORAGE) {
-                loadWords()
+                mainPresenter.loadWords(path)
             }
         }
 
     override fun onDestroy() {
         super.onDestroy()
-        scope.cancel()
+        mainPresenter.detachView()
     }
 }

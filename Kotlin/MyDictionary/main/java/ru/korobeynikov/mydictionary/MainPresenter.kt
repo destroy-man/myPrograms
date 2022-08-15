@@ -1,27 +1,54 @@
 package ru.korobeynikov.mydictionary
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.text.StringBuilder
 
-class MainPresenter(private var mainModel: MainModel) {
+class MainPresenter(private var mainModel: MainModel, private val scope: CoroutineScope) {
 
-    private lateinit var listWords: List<String> //список слов полученный из базы данных
+    private var view: MainActivity? = null //объект View
+    private lateinit var listWords: List<Word> //список слов
 
-    suspend fun getListWords() {
-        listWords = mainModel.getWordsFromRealm()
+    //присоединить объект View
+    fun attachView(mainActivity: MainActivity) {
+        view = mainActivity
     }
 
-    //Фильтрация списка слов
-    fun getFilterListWords(findWord: String, fieldName: String, cutList: Boolean,
-        showTranslation: Boolean, countWordShowString: String): StringBuilder {
+    //отсоединить объект View
+    fun detachView() {
+        view = null
+    }
+
+    fun getListWords() {
+        scope.launch {
+            listWords = mainModel.getWordsFromRealm()
+            withContext(Dispatchers.Main) {
+                view?.showListWords(getFilterListWords())
+            }
+        }
+    }
+
+    //Фильтрация списка слов без параметров
+    private fun getFilterListWords(): StringBuilder {
+        val allWords = StringBuilder()
+        if (listWords.isNotEmpty())
+            for (index in listWords.indices)
+                allWords.append(" ${listWords[index].original} = ${listWords[index].translation}\n")
+        return allWords
+    }
+
+    //Фильтрация списка слов с параметрами
+    fun getFilterListWords(findWord: String, fieldName: String, cutList: Boolean, showTranslation: Boolean,
+                           countWordShowString: String): StringBuilder {
         val filterListWords = if (!cutList) {
             if (fieldName == "original")
-                listWords.filter { it.split("=")[0].contains(findWord, true) }
+                listWords.filter { word -> word.original.contains(findWord, true) }
             else
-                listWords.filter { it.split("=")[1].contains(findWord, true) }
+                listWords.filter { word -> word.translation.contains(findWord, true) }
         } else
             listWords
-        val listOriginal = filterListWords.map { word -> word.split("=")[0] }
-        val listTranslation = filterListWords.map { word -> word.split("=")[1] }
         var indexCut = 0
         val countWordsShow =
             when {
@@ -33,9 +60,11 @@ class MainPresenter(private var mainModel: MainModel) {
             if (cutList) {
                 indexCut =
                     if (fieldName == "original")
-                        listOriginal.indexOf(listOriginal.find { original -> original.startsWith(findWord) })
+                        filterListWords.indexOf(filterListWords.find { word -> word.original
+                            .startsWith(findWord) })
                     else
-                        listTranslation.indexOf(listTranslation.find { translation -> translation.startsWith(findWord) })
+                        filterListWords.indexOf(filterListWords.find { word -> word.translation
+                            .startsWith(findWord) })
                 if (indexCut < 0) indexCut = 0
             }
             var lastIndex = indexCut + countWordsShow
@@ -44,33 +73,43 @@ class MainPresenter(private var mainModel: MainModel) {
             for (index in indexCut until lastIndex)
                 if (showTranslation) {
                     if (fieldName == "original")
-                        allWords.append(" ${listOriginal[index]} = ${listTranslation[index]}\n")
+                        allWords.append(" ${filterListWords[index].original} = " +
+                                "${filterListWords[index].translation}\n")
                     else
-                        allWords.append(" ${listTranslation[index]} = ${listOriginal[index]}\n")
+                        allWords.append(" ${filterListWords[index].translation} = " +
+                                "${filterListWords[index].original}\n")
                 } else if (fieldName == "translation")
-                    allWords.append(" ${listTranslation[index]}\n")
+                    allWords.append(" ${filterListWords[index].translation}\n")
                 else
-                    allWords.append(" ${listOriginal[index]}\n")
+                    allWords.append(" ${filterListWords[index].original}\n")
         }
         return allWords
     }
 
-    suspend fun addWord(originalText: String, translationText: String) {
-        mainModel.addWordInRealm(originalText, translationText)
-        getListWords()
+    fun addWord(originalText: String, translationText: String) {
+        scope.launch {
+            mainModel.addWordInRealm(originalText, translationText)
+            getListWords()
+        }
     }
 
-    suspend fun deleteWord(originalText: String) {
-        mainModel.deleteWordFromRealm(originalText)
-        getListWords()
+    fun deleteWord(originalText: String) {
+        scope.launch {
+            mainModel.deleteWordFromRealm(originalText)
+            getListWords()
+        }
     }
 
     fun saveWords(path: String) {
-        mainModel.saveWordsInFile(path, listWords)
+        scope.launch {
+            mainModel.saveWordsInFile(path, listWords)
+        }
     }
 
-    suspend fun loadWords(path: String) {
-        mainModel.loadWordsFromFile(path)
-        getListWords()
+    fun loadWords(path: String) {
+        scope.launch {
+            mainModel.loadWordsFromFile(path)
+            getListWords()
+        }
     }
 }
