@@ -40,8 +40,8 @@ class MainPresenter(private var mainModel: MainModel, private val scope: Corouti
     }
 
     //Фильтрация списка слов с параметрами
-    fun getFilterListWords(findWord: String, fieldName: String, cutList: Boolean, showTranslation: Boolean,
-                           countWordShowString: String): StringBuilder {
+    fun getFilterListWords(findWord: String, fieldName: String, cutList: Boolean,
+                           showTranslation: Boolean, countWordShowString: String): StringBuilder {
         val filterListWords = if (!cutList) {
             if (fieldName == "original")
                 listWords.filter { word -> word.original.contains(findWord, true) }
@@ -102,14 +102,20 @@ class MainPresenter(private var mainModel: MainModel, private val scope: Corouti
 
     fun saveWords(path: String) {
         scope.launch {
-            mainModel.saveWordsInFile(path, listWords)
+            val message = mainModel.saveWordsInFile(path, listWords)
+            withContext(Dispatchers.Main) {
+                view?.showMessage(message)
+            }
         }
     }
 
     fun loadWords(path: String) {
         scope.launch {
-            mainModel.loadWordsFromFile(path)
+            val message = mainModel.loadWordsFromFile(path)
             getListWords()
+            withContext(Dispatchers.Main) {
+                view?.showMessage(message)
+            }
         }
     }
 }

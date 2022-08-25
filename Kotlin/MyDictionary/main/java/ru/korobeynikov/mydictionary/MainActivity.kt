@@ -95,16 +95,14 @@ class MainActivity : AppCompatActivity() {
         //Добавление одного слова
         addWord.setOnClickListener {
             if (originalText.text.isEmpty() || translationText.text.isEmpty())
-                Toast.makeText(this, "Для добавления слова в словарь нужно заполнить " +
-                        "поля Слово и Перевод!", Toast.LENGTH_LONG).show()
+                showMessage("Для добавления слова в словарь нужно заполнить поля Слово и Перевод!")
             else
                 mainPresenter.addWord(originalText.text.toString(), translationText.text.toString())
         }
         //Удаление одного слова
         deleteWord.setOnClickListener {
             if (originalText.text.isEmpty())
-                Toast.makeText(this, "Для удаления слова из словаря нужно заполнить " +
-                        "поле Слово!", Toast.LENGTH_LONG).show()
+                showMessage("Для удаления слова из словаря нужно заполнить поле Слово!")
             else
                 mainPresenter.deleteWord(originalText.text.toString())
         }
@@ -170,6 +168,11 @@ class MainActivity : AppCompatActivity() {
                 mainPresenter.loadWords(path)
             }
         }
+
+    //Вывод сообщения
+    fun showMessage(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+    }
 
     override fun onDestroy() {
         super.onDestroy()

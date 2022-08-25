@@ -1,6 +1,5 @@
 package ru.korobeynikov.mydictionary
 
-import android.util.Log
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.realm.kotlin.executeTransactionAwait
@@ -11,7 +10,6 @@ import java.io.*
 class MainModel(private var config: RealmConfiguration) {
 
     private lateinit var realm: Realm //объект необходимый для взаимодействия с базой данных
-    private val logTag = "myErrors" //метка для логгирования ошибок
 
     suspend fun getWordsFromRealm(): List<Word> {
         val listWords = ArrayList<Word>()
@@ -45,12 +43,12 @@ class MainModel(private var config: RealmConfiguration) {
         realm.close()
     }
 
-    fun saveWordsInFile(path: String, listWords: List<Word>) {
+    fun saveWordsInFile(path: String, listWords: List<Word>): String {
         val directory = File(path, "My dictionary")
         if (!directory.exists())
             directory.mkdirs()
         val fileDictionary = File(directory, "List words.txt")
-        try {
+        return try {
             if (listWords.isNotEmpty()) {
                 val writer = BufferedWriter(FileWriter(fileDictionary))
                 for (word in listWords) {
@@ -59,18 +57,19 @@ class MainModel(private var config: RealmConfiguration) {
                 }
                 writer.close()
             }
+            "Сохранение в файл успешно завершено!"
         } catch (ex: IOException) {
-            Log.d(logTag, ex.message.toString())
+            "Произошла ошибка при сохранении в файл!"
         }
     }
 
-    suspend fun loadWordsFromFile(path: String) {
+    suspend fun loadWordsFromFile(path: String): String {
         val directory = File(path, "My dictionary")
         if (!directory.exists())
             directory.mkdirs()
         val fileDictionary = File(directory, "List words.txt")
         val allWords = StringBuilder()
-        try {
+        return try {
             val reader = BufferedReader(FileReader(fileDictionary))
             var str = reader.readLine()
             while (str != null) {
@@ -90,8 +89,9 @@ class MainModel(private var config: RealmConfiguration) {
                 }
                 realm.close()
             }
+            "Данные из файла успешно загружены!"
         } catch (ex: IOException) {
-            Log.d(logTag, ex.message.toString())
+            "Произошла ошибка при загрузке данных из файла!"
         }
     }
 
