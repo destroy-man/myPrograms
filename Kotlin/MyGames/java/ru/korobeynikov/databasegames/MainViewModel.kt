@@ -4,9 +4,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.*
 
-class MainViewModel(private val mainModel: MainModel, val gamesLiveData: MutableLiveData<List<Game>>,
-                    private val scope: CoroutineScope) : ViewModel() {
+class MainViewModel(private val mainModel: MainModel, private val scope: CoroutineScope) : ViewModel() {
 
+    val gamesLiveData = MutableLiveData<List<Game>>() //LiveData хранящая список игр
+    val messageLiveData = MutableLiveData<String>() //LiveData хранящая сообщения
     private lateinit var listGames: List<Game> //список игр
 
     fun getGames() {
@@ -26,8 +27,8 @@ class MainViewModel(private val mainModel: MainModel, val gamesLiveData: Mutable
         if (genreGame > 0)
             filterListGames = filterListGames.filter { it.genre == genreGame }
         if (isSort)
-            filterListGames = filterListGames.sortedWith(compareByDescending(Game::rating).thenBy(Game::genre)
-                .thenByDescending(Game::year).thenByDescending(Game::id))
+            filterListGames = filterListGames.sortedWith(compareByDescending(Game::rating)
+                .thenBy(Game::genre).thenByDescending(Game::year).thenByDescending(Game::id))
         gamesLiveData.value = filterListGames
     }
 
@@ -54,13 +55,13 @@ class MainViewModel(private val mainModel: MainModel, val gamesLiveData: Mutable
 
     fun saveGamesInFile(path: String) {
         scope.launch {
-            mainModel.saveGames(path, listGames)
+            messageLiveData.postValue(mainModel.saveGames(path, listGames))
         }
     }
 
     fun loadGamesFromFile(path: String) {
         scope.launch {
-            mainModel.loadGames(path)
+            messageLiveData.postValue(mainModel.loadGames(path))
             getGames()
         }
     }

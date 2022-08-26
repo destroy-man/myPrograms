@@ -34,12 +34,8 @@ class MainActivity : AppCompatActivity() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>,
                                             grantResults: IntArray) {
         when (requestCode) {
-            REQUEST_CODE_PERMISSION_WRITE_STORAGE -> {
-                mainViewModel.saveGamesInFile(path)
-            }
-            REQUEST_CODE_PERMISSION_READ_STORAGE -> {
-                mainViewModel.loadGamesFromFile(path)
-            }
+            REQUEST_CODE_PERMISSION_WRITE_STORAGE -> mainViewModel.saveGamesInFile(path)
+            REQUEST_CODE_PERMISSION_READ_STORAGE -> mainViewModel.loadGamesFromFile(path)
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
@@ -63,6 +59,10 @@ class MainActivity : AppCompatActivity() {
             }
             binding.showGamesText.text = allGames.toString()
         }
+        //Вывод сообщения
+        mainViewModel.messageLiveData.observe(this) { message ->
+            Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+        }
     }
 
     //Добавление игры
@@ -72,11 +72,11 @@ class MainActivity : AppCompatActivity() {
         val yearGameText = binding.yearGameText.text.toString()
         val genreGame = binding.genreGameList.selectedItemPosition
         if (nameGameText.isEmpty() || ratingGameText.isEmpty() || yearGameText.isEmpty() || genreGame == 0)
-            Toast.makeText(this, "Для добавления игры необходимо заполнить поля Название, " +
-                    "Оценка, Год и указать Жанр!", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Для добавления игры необходимо заполнить поля " +
+                    "Название, Оценка, Год и указать Жанр!", Toast.LENGTH_LONG).show()
         else if (ratingGameText.toInt() < 1 || ratingGameText.toInt() > 10)
-            Toast.makeText(this, "Некорректно указана оценка. Оценка должна принимать значение " +
-                    "в интервале от 1 до 10.", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Некорректно указана оценка. Оценка должна принимать " +
+                    "значение в интервале от 1 до 10.", Toast.LENGTH_LONG).show()
         else
             mainViewModel.addGame(nameGameText, ratingGameText, yearGameText, genreGame)
     }
@@ -91,8 +91,8 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Для изменения данных об игре необходимо заполнить " +
                     "поле Название!", Toast.LENGTH_LONG).show()
         else if (ratingGameText.isNotEmpty() && (ratingGameText.toInt() < 1 || ratingGameText.toInt() > 10))
-            Toast.makeText(this, "Некорректно указана оценка. Оценка должна принимать значение " +
-                    "в интервале от 1 до 10.", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Некорректно указана оценка. Оценка должна принимать " +
+                    "значение в интервале от 1 до 10.", Toast.LENGTH_LONG).show()
         else
             mainViewModel.changeGame(nameGameText, ratingGameText, yearGameText, genreGame)
     }
@@ -102,8 +102,8 @@ class MainActivity : AppCompatActivity() {
         val nameGameText = binding.nameGameText.text.toString()
         val yearGameText = binding.yearGameText.text.toString()
         if (nameGameText.isEmpty())
-            Toast.makeText(this, "Для удаления игры необходимо заполнить поле Название!",
-                Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Для удаления игры необходимо заполнить поле " +
+                    "Название!", Toast.LENGTH_LONG).show()
         else
             mainViewModel.deleteGame(nameGameText, yearGameText)
     }
@@ -114,8 +114,8 @@ class MainActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             processPermission()
         } else
-            ActivityCompat.requestPermissions(this,
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_CODE_PERMISSION_WRITE_STORAGE)
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission
+                .WRITE_EXTERNAL_STORAGE), REQUEST_CODE_PERMISSION_WRITE_STORAGE)
     }
 
     //Загрузка игр из файла
@@ -124,8 +124,8 @@ class MainActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             processPermission()
         } else
-            ActivityCompat.requestPermissions(this,
-                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_CODE_PERMISSION_READ_STORAGE)
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest
+                .permission.READ_EXTERNAL_STORAGE), REQUEST_CODE_PERMISSION_READ_STORAGE)
     }
 
     //Обработка разрешений (для новых версий)

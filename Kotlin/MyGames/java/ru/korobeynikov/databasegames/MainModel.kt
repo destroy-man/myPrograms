@@ -2,12 +2,9 @@ package ru.korobeynikov.databasegames
 
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
-import android.util.Log
 import java.io.*
 
 class MainModel(private val dbGames: DBGames) {
-
-    private val logTag = "myErrors" //метка для логгирования ошибок
 
     fun getGamesFromDB(): List<Game> {
         val listGames = ArrayList<Game>()
@@ -21,8 +18,8 @@ class MainModel(private val dbGames: DBGames) {
             val yearColIndex = c.getColumnIndex("year")
             val genreColIndex = c.getColumnIndex("genre")
             do {
-                listGames.add(Game(c.getInt(idColIndex), c.getString(nameColIndex), c.getInt(ratingColIndex),
-                    c.getInt(yearColIndex), c.getInt(genreColIndex)))
+                listGames.add(Game(c.getInt(idColIndex), c.getString(nameColIndex),
+                    c.getInt(ratingColIndex), c.getInt(yearColIndex), c.getInt(genreColIndex)))
             } while (c.moveToNext())
         }
         c.close()
@@ -65,8 +62,8 @@ class MainModel(private val dbGames: DBGames) {
             if (yearGameText.isEmpty())
                 db.update("Games", cv, "name=?", arrayOf(nameGameText))
             else
-                db.update("Games", cv, "name=? AND year=?",
-                    arrayOf(nameGameText, yearGameText))
+                db.update("Games", cv, "name=? AND year=?", arrayOf(nameGameText,
+                    yearGameText))
         db.close()
     }
 
@@ -79,12 +76,12 @@ class MainModel(private val dbGames: DBGames) {
         db.close()
     }
 
-    fun saveGames(path: String, listGames: List<Game>?) {
+    fun saveGames(path: String, listGames: List<Game>?): String {
         val directory = File(path, "List games")
         if (!directory.exists())
             directory.mkdirs()
         val gamesFile = File("${directory.path}/games.txt")
-        try {
+        return try {
             if (listGames != null && listGames.isNotEmpty()) {
                 val writer = BufferedWriter(FileWriter(gamesFile))
                 for (game in listGames) {
@@ -93,25 +90,27 @@ class MainModel(private val dbGames: DBGames) {
                 }
                 writer.close()
             }
+            "Сохранение в файл успешно завершено!"
         } catch (ex: IOException) {
-            Log.d(logTag, ex.message.toString())
+            "Произошла ошибка при сохранении в файл!"
         }
     }
 
-    fun loadGames(path: String) {
+    fun loadGames(path: String): String {
         val directory = File(path, "List games")
         val gamesFile = File("${directory.path}/games.txt")
-        try {
+        return try {
             val reader = BufferedReader(FileReader(gamesFile))
             var line = reader.readLine()
             while (line != null) {
-                addGameInDB(line.split(";")[0], line.split(";")[1], line.split(";")[2],
-                    line.split(";")[3].toInt())
+                addGameInDB(line.split(";")[0], line.split(";")[1],
+                    line.split(";")[2], line.split(";")[3].toInt())
                 line = reader.readLine()
             }
             reader.close()
+            "Данные из файла успешно загружены!"
         } catch (ex: IOException) {
-            Log.d(logTag, ex.message.toString())
+            "Произошла ошибка при загрузке данных из файла!"
         }
     }
 }
