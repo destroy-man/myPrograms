@@ -2,13 +2,23 @@ package ru.korobeynikov.myachievements.achievement
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.kotlin.subscribeBy
-import io.reactivex.rxjava3.subjects.BehaviorSubject
-import ru.korobeynikov.myachievements.database.Achievement
 import java.text.SimpleDateFormat
 
-class MainPresenter(private val mainRepository: MainRepository,
-    private var mainState: MainState, val states: BehaviorSubject<MainState>) {
+class MainPresenter(private val mainRepository: MainRepository, private var mainState: MainState) {
 
+    private var view: MainActivity? = null //объект View
+
+    //присоединить объект View
+    fun attachView(mainActivity: MainActivity) {
+        view = mainActivity
+    }
+
+    //отсоединить объект View
+    fun detachView() {
+        view = null
+    }
+
+    //Приведение даты и времени к нужному формату
     private fun getDateTime(date: String, time: String): Long {
         var dateTime = 0L
         if (date.isNotEmpty() && time.isNotEmpty()) {
@@ -23,89 +33,68 @@ class MainPresenter(private val mainRepository: MainRepository,
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy { listAchievements ->
                 mainState = state.copy(loading = loading, achievementsFromDB = listAchievements)
-                states.onNext(mainState)
+                view?.render(mainState)
             }
     }
 
+    //Обработка всех действий пользователя
     fun handleIntent(intent: MainIntent) {
         when (intent) {
-            is MainIntent.getAllAchievements -> {
-                getListAchievements(mainState, intent.nameGame, null)
-            }
-            is MainIntent.updateAllAchievements -> {
+            is MainIntent.GetAllAchievements -> getListAchievements(mainState, intent.nameGame, null)
+            is MainIntent.UpdateAllAchievements ->
                 mainRepository.updateAllAchievements()
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeBy {
                         getListAchievements(mainState, "", null)
                     }
-            }
-            is MainIntent.searchAchievements -> {
+            is MainIntent.SearchAchievements ->
                 mainRepository.searchAchievements(intent.idGame)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeBy { mapAchievements ->
                         mainState = mainState.copy(achievementsFromGame = mapAchievements)
-                        getListAchievements(mainState, "", LoadingObject.achievements)
+                        getListAchievements(mainState, "", LoadingObject.Achievements)
                     }
-            }
-            is MainIntent.getPercentForAchievement -> {
+            is MainIntent.GetPercentForAchievement -> {
                 val percent = mainState.achievementsFromGame[intent.achievement].toString()
                 mainState = mainState.copy(achievementPercent = percent)
-                getListAchievements(mainState, "", LoadingObject.percent)
+                getListAchievements(mainState, "", LoadingObject.Percent)
             }
-            is MainIntent.addAchievement -> {
-                mainRepository.addAchievement(intent.nameGame, intent.nameAchievement, intent.idGame,
-                    intent.percentAchievement, getDateTime(intent.dateAchievement, intent.timeAchievement))
+            is MainIntent.AddAchievement ->
+                mainRepository.addAchievement(intent.nameGame, intent.nameAchievement,
+                    intent.idGame, intent.percentAchievement, getDateTime(intent.dateAchievement,
+                    intent.timeAchievement))
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeBy { message ->
-                        mainState = mainState.copy(message = message)
-                        getListAchievements(mainState, "", LoadingObject.message)
+                    .subscribeBy {
+                        getListAchievements(mainState, "", null)
                     }
-            }
-            is MainIntent.changeAchievement -> {
-                mainRepository.changeAchievement(intent.nameGame, intent.nameAchievement, intent.idGame,
-                    intent.percentAchievement, getDateTime(intent.dateAchievement, intent.timeAchievement))
+            is MainIntent.ChangeAchievement ->
+                mainRepository.changeAchievement(intent.nameGame, intent.nameAchievement,
+                    intent.idGame, intent.percentAchievement, getDateTime(intent.dateAchievement,
+                    intent.timeAchievement))
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeBy { message ->
-                        mainState = mainState.copy(message = message)
-                        getListAchievements(mainState, "", LoadingObject.message)
+                    .subscribeBy {
+                        getListAchievements(mainState, "", null)
                     }
-            }
-            is MainIntent.deleteAchievement -> {
+            is MainIntent.DeleteAchievement ->
                 mainRepository.deleteAchievement(intent.idGame)
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeBy { message ->
-                        mainState = mainState.copy(message = message)
-                        getListAchievements(mainState, "", LoadingObject.message)
+                    .subscribeBy {
+                        getListAchievements(mainState, "", null)
                     }
-            }
-            is MainIntent.saveAchievements -> {
+            is MainIntent.SaveAchievements ->
                 mainRepository.saveAchievements(intent.path)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeBy { message ->
-                        mainState = mainState.copy(message = message)
-                        getListAchievements(mainState, "", LoadingObject.message)
+                        getListAchievements(mainState, "", null)
+                        view?.showMessage(message)
                     }
-            }
-            is MainIntent.loadAchievements -> {
+            is MainIntent.LoadAchievements ->
                 mainRepository.loadAchievements(intent.path)
-                    .observeOn(AndroidSchedulers.mainThread()).take(1)
+                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribeBy { message ->
                         getListAchievements(mainState, "", null)
+                        view?.showMessage(message)
                     }
-            }
         }
     }
-}
-
-data class MainState(
-    val loading: LoadingObject? = null,
-    val achievementsFromDB: List<Achievement> = emptyList(),
-    val achievementsFromGame: Map<String, String> = emptyMap(),
-    val listChange: List<String> = emptyList(),
-    val achievementPercent: String = "",
-    val message: String = "",
-)
-
-enum class LoadingObject {
-    achievements, percent, message
 }

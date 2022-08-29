@@ -18,35 +18,30 @@ class MainRepository(db: AchievementDatabase, retrofit: Retrofit) {
     private val achievementApi = retrofit.create(AchievementApi::class.java) //интерфейс для взаимодействия с сервером
 
     fun getListAchievements(nameGame: String): Flowable<List<Achievement>> {
-        return Flowable.create({ emitter ->
-            if (nameGame.isEmpty())
-                achievementDao.getSortedAll().subscribeBy { listAchievements ->
-                    emitter.onNext(listAchievements)
-                }
-            else
-                achievementDao.getAchievementsByName("%$nameGame%")
-                    .subscribeBy { listAchievements ->
-                        emitter.onNext(listAchievements)
-                    }
-        }, BackpressureStrategy.LATEST)
+        return if (nameGame.isEmpty())
+            achievementDao.getSortedAll()
+        else
+            achievementDao.getAchievementsByName("%$nameGame%")
     }
 
-    fun updateAllAchievements(): Flowable<String> {
+    fun updateAllAchievements(): Flowable<Any> {
         return Flowable.create({
-            achievementDao.getSortedAll().take(1).subscribeBy { sortListAchievements ->
+            achievementDao.getSortedAll().subscribeBy { sortListAchievements ->
                 for (achievement in sortListAchievements)
                     achievementApi.getListAchievements(achievement.idGame)
                         .subscribeOn(Schedulers.io())
                         .subscribeBy { listAchievements ->
                             val jsonAchievements = listAchievements.achievementpercentages.toString()
-                            val jsonObj = JSONObject(jsonAchievements.substring(jsonAchievements.indexOf("{"),
-                                jsonAchievements.lastIndexOf("}") + 1))
+                            val jsonObj = JSONObject(jsonAchievements.substring(jsonAchievements
+                                .indexOf("{"), jsonAchievements.lastIndexOf("}") + 1))
                             val jsonArray = (jsonObj["achievements"] as JSONArray)
                             var j = jsonArray.length() - 1
                             while (j > -1) {
                                 if (jsonArray.getJSONObject(j).get("name") == achievement.nameAchievement) {
-                                    var percent = jsonArray.getJSONObject(j).get("percent").toString().toDouble()
-                                    percent = String.format("%.1f", percent).replace(",", ".").toDouble()
+                                    var percent = jsonArray.getJSONObject(j).get("percent")
+                                        .toString().toDouble()
+                                    percent = String.format("%.1f", percent)
+                                        .replace(",", ".").toDouble()
                                     if (achievement.percent != percent) {
                                         achievement.percent = percent
                                         achievementDao.update(achievement)
@@ -57,7 +52,7 @@ class MainRepository(db: AchievementDatabase, retrofit: Retrofit) {
                             }
                         }
             }
-        }, BackpressureStrategy.LATEST)
+        }, BackpressureStrategy.BUFFER)
     }
 
     fun searchAchievements(idGame: Long): Flowable<Map<String, String>> {
@@ -66,30 +61,27 @@ class MainRepository(db: AchievementDatabase, retrofit: Retrofit) {
                 .subscribeOn(Schedulers.io())
                 .subscribeBy { listAchievements ->
                     val jsonAchievements = listAchievements.achievementpercentages.toString()
-                    val jsonObj = JSONObject(jsonAchievements.substring(jsonAchievements.indexOf("{"),
-                        jsonAchievements.lastIndexOf("}") + 1))
+                    val jsonObj = JSONObject(jsonAchievements.substring(jsonAchievements
+                        .indexOf("{"), jsonAchievements.lastIndexOf("}") + 1))
                     val jsonArray = (jsonObj["achievements"] as JSONArray)
                     val achievements = LinkedHashMap<String, String>()
                     for (i in 0 until jsonArray.length()) {
                         val nameAchievement = jsonArray.getJSONObject(i).get("name").toString()
-                        val percent = String.format("%.1f", jsonArray.getJSONObject(i).get("percent"))
-                            .replace(",", ".")
+                        val percent = String.format("%.1f", jsonArray.getJSONObject(i)
+                            .get("percent")).replace(",", ".")
                         achievements[nameAchievement] = percent
                     }
                     emitter.onNext(achievements)
                 }
-        }, BackpressureStrategy.LATEST)
+        }, BackpressureStrategy.BUFFER)
     }
 
     fun addAchievement(nameGame: String, nameAchievement: String, idGame: Long,
-                       percentAchievement: Double, dateTime: Long, ): Flowable<String> {
-        return Flowable.create({ emitter ->
+                       percentAchievement: Double, dateTime: Long): Flowable<Any> {
+        return Flowable.create({
             achievementDao.getAchievementById(idGame)
                 .subscribeOn(Schedulers.io())
                 .subscribeBy(
-                    onSuccess = {
-                        emitter.onNext("Достижение для игры с данным ID уже добавлено!")
-                    },
                     onComplete = {
                         val achievement = Achievement()
                         achievement.idGame = idGame
@@ -98,51 +90,38 @@ class MainRepository(db: AchievementDatabase, retrofit: Retrofit) {
                         achievement.percent = percentAchievement
                         achievement.dateTime = dateTime
                         achievementDao.insert(achievement)
-                        emitter.onNext("Достижение для данной игры добавлено!")
                     }
                 )
-        }, BackpressureStrategy.LATEST)
+        }, BackpressureStrategy.BUFFER)
     }
 
     fun changeAchievement(nameGame: String, nameAchievement: Any?, idGame: Long,
-                          percentAchievement: String, dateTime: Long, ): Flowable<String> {
-        return Flowable.create({ emitter ->
+                          percentAchievement: String, dateTime: Long): Flowable<Any> {
+        return Flowable.create({
             achievementDao.getAchievementById(idGame)
                 .subscribeOn(Schedulers.io())
-                .subscribeBy(
-                    onSuccess = { achievement ->
-                        if (dateTime != 0L)
-                            achievement.dateTime = dateTime
-                        if (nameAchievement != null) {
-                            achievement.nameAchievement = nameAchievement.toString()
-                            achievement.percent = percentAchievement.substring(9).toDouble()
-                        }
-                        if (nameGame.isNotEmpty())
-                            achievement.nameGame = nameGame
-                        achievementDao.update(achievement)
-                        emitter.onNext("Достижение для данной игры изменено!")
-                    },
-                    onComplete = {
-                        emitter.onNext("Достижение для игры с данным ID не найдено!")
+                .subscribeBy { achievement ->
+                    if (dateTime != 0L)
+                        achievement.dateTime = dateTime
+                    if (nameAchievement != null) {
+                        achievement.nameAchievement = nameAchievement.toString()
+                        achievement.percent = percentAchievement.substring(9).toDouble()
                     }
-                )
-        }, BackpressureStrategy.LATEST)
+                    if (nameGame.isNotEmpty())
+                        achievement.nameGame = nameGame
+                    achievementDao.update(achievement)
+                }
+        }, BackpressureStrategy.BUFFER)
     }
 
-    fun deleteAchievement(idGame: Long): Flowable<String> {
-        return Flowable.create({ emitter ->
+    fun deleteAchievement(idGame: Long): Flowable<Any> {
+        return Flowable.create({
             achievementDao.getAchievementById(idGame)
                 .subscribeOn(Schedulers.io())
-                .subscribeBy(
-                    onSuccess = { achievement ->
-                        achievementDao.delete(achievement)
-                        emitter.onNext("Достижение для данной игры удалено!")
-                    },
-                    onComplete = {
-                        emitter.onNext("Достижение для игры с данным ID не найдено!")
-                    }
-                )
-        }, BackpressureStrategy.LATEST)
+                .subscribeBy { achievement ->
+                    achievementDao.delete(achievement)
+                }
+        }, BackpressureStrategy.BUFFER)
     }
 
     fun saveAchievements(path: String): Flowable<String> {
@@ -168,47 +147,44 @@ class MainRepository(db: AchievementDatabase, retrofit: Retrofit) {
                         } catch (e: IOException) {
                             emitter.onNext("Произошла ошибка при сохранении в файл!")
                         }
-                    } else
-                        emitter.onNext("Нет данных для сохранения!")
+                    }
                 }
-        }, BackpressureStrategy.LATEST)
+        }, BackpressureStrategy.BUFFER)
     }
 
     fun loadAchievements(path: String): Flowable<String> {
-        return Flowable.create({
+        return Flowable.create({ emitter ->
             val directory = File(path, "My Achievements")
             val achievementFile = File("${directory.path}/achievements.txt")
-            val reader = BufferedReader(FileReader(achievementFile))
-            var line = reader.readLine()
-            while (line != null) {
-                val idGame = line.split(";")[0].toLong()
-                val nameGame = line.split(";")[1]
-                val nameAchievement = line.split(";")[2]
-                val percent = line.split(";")[3].toDouble()
-                val dateTime = line.split(";")[4].toLong()
-                achievementDao.getAchievementById(idGame)
-                    .subscribeOn(Schedulers.io())
-                    .subscribeBy(
-                        onSuccess = { achievement ->
-                            achievement.nameGame = nameGame
-                            achievement.nameAchievement = nameAchievement
-                            achievement.percent = percent
-                            achievement.dateTime = dateTime
-                            achievementDao.update(achievement)
-                        },
-                        onComplete = {
-                            val achievement = Achievement()
-                            achievement.idGame = idGame
-                            achievement.nameGame = nameGame
-                            achievement.nameAchievement = nameAchievement
-                            achievement.percent = percent
-                            achievement.dateTime = dateTime
-                            achievementDao.insert(achievement)
-                        }
-                    )
-                line = reader.readLine()
+            try {
+                val reader = BufferedReader(FileReader(achievementFile))
+                var line = reader.readLine()
+                while (line != null) {
+                    val idGame = line.split(";")[0].toLong()
+                    val nameGame = line.split(";")[1]
+                    val nameAchievement = line.split(";")[2]
+                    val percent = line.split(";")[3].toDouble()
+                    val dateTime = line.split(";")[4].toLong()
+                    achievementDao.getAchievementById(idGame)
+                        .subscribeOn(Schedulers.io())
+                        .subscribeBy(
+                            onComplete = {
+                                val achievement = Achievement()
+                                achievement.idGame = idGame
+                                achievement.nameGame = nameGame
+                                achievement.nameAchievement = nameAchievement
+                                achievement.percent = percent
+                                achievement.dateTime = dateTime
+                                achievementDao.insert(achievement)
+                            }
+                        )
+                    line = reader.readLine()
+                }
+                reader.close()
+                emitter.onNext("Данные из файла успешно загружены!")
+            } catch (ex: IOException) {
+                emitter.onNext("Произошла ошибка при загрузке данных из файла!")
             }
-            reader.close()
-        }, BackpressureStrategy.LATEST)
+        }, BackpressureStrategy.BUFFER)
     }
 }
