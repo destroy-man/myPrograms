@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="handler"
+            type="ru.korobeynikov.p20androiddatabindingprocessingevents.MyHandler" />
+
+        <variable
+            name="context"
+            type="android.content.Context" />
+
+        <variable
+            name="employee"
+            type="ru.korobeynikov.p20androiddatabindingprocessingevents.Employee" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text='@{employee.name}' />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{employee.address}" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{String.valueOf(employee.salary)}" />
+
+        <CheckBox
+            android:id="@+id/button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onCheckedChanged="@{(view,checked) -> handler.onEnabled(employee, checked, context)}"
+            android:text="@string/enabled" />
+
+    </LinearLayout>
+
+</layout>
