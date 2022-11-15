@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity(), Fragment1Callback, Fragment2Callback, 
     }
 
     override fun onFragment1NextClick() {
-        navController.navigate(R.id.fragment2)
+        navController.navigate(R.id.action_fragment1_to_fragment2)
     }
 
     override fun onFragment1BackClick() {
@@ -40,5 +40,13 @@ class MainActivity : AppCompatActivity(), Fragment1Callback, Fragment2Callback, 
     override fun onFragment3BackClick() {
         if (navController.popBackStack())
             navController.navigate(R.id.fragment2)
+    }
+
+    override fun onBackPressed() {
+        when (navController.currentDestination?.id) {
+            R.id.fragment1 -> finish()
+            R.id.fragment2 -> navController.navigate(R.id.fragment1)
+            R.id.fragment3 -> navController.navigate(R.id.fragment2)
+        }
     }
 }
