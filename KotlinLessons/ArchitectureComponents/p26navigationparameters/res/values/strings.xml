@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">NavigationParameters</string>
+    <string name="fragment1Title">Fragment 1</string>
+    <string name="fragment2Title">Fragment 2</string>
+    <string name="fragment3Title">Fragment 3</string>
+    <string name="backButtonTitle">Back</string>
+    <string name="nextButtonTitle">Next</string>
+</resources>
