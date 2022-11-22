@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/fragment1">
+    <fragment
+        android:id="@+id/fragment1"
+        android:name="ru.korobeynikov.p28navigationglobalactiondeeplink.Fragment1"
+        android:label="@string/fragment1Title"
+        tools:layout="@layout/fragment1" />
+    <navigation
+        android:id="@+id/navigation2"
+        app:startDestination="@id/fragment2">
+        <fragment
+            android:id="@+id/fragment2"
+            android:name="ru.korobeynikov.p28navigationglobalactiondeeplink.Fragment2"
+            android:label="@string/fragment2Title"
+            tools:layout="@layout/fragment2" />
+        <fragment
+            android:id="@+id/fragment3"
+            android:name="ru.korobeynikov.p28navigationglobalactiondeeplink.Fragment3"
+            android:label="@string/fragment3Title"
+            tools:layout="@layout/fragment3" />
+        <action
+            android:id="@+id/action_global_fragment3"
+            app:destination="@id/fragment3" />
+    </navigation>
+    <fragment
+        android:id="@+id/fragment4"
+        android:name="ru.korobeynikov.p28navigationglobalactiondeeplink.Fragment4"
+        android:label="fragment4"
+        tools:layout="@layout/fragment4" />
+</navigation>
