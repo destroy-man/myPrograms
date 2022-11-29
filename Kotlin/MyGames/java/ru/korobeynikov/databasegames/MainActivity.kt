@@ -50,15 +50,8 @@ class MainActivity : AppCompatActivity() {
             modules(mainViewModelModule)
         }
         //Получение и отображение данных по играм
+        binding.mainViewModel = mainViewModel
         mainViewModel.getGames()
-        mainViewModel.gamesLiveData.observe(this) { games ->
-            val allGames = StringBuilder()
-            for (i in games.indices) {
-                val game = games[i]
-                allGames.append(" ${i + 1}. ${game.name} (${game.year}) = ${game.rating}\n")
-            }
-            binding.showGamesText.text = allGames.toString()
-        }
         //Вывод сообщения
         mainViewModel.messageLiveData.observe(this) { message ->
             Toast.makeText(this, message, Toast.LENGTH_LONG).show()
@@ -114,8 +107,8 @@ class MainActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             processPermission()
         } else
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission
-                .WRITE_EXTERNAL_STORAGE), REQUEST_CODE_PERMISSION_WRITE_STORAGE)
+            ActivityCompat.requestPermissions(this,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_CODE_PERMISSION_WRITE_STORAGE)
     }
 
     //Загрузка игр из файла
@@ -124,8 +117,8 @@ class MainActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             processPermission()
         } else
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest
-                .permission.READ_EXTERNAL_STORAGE), REQUEST_CODE_PERMISSION_READ_STORAGE)
+            ActivityCompat.requestPermissions(this,
+                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_CODE_PERMISSION_READ_STORAGE)
     }
 
     //Обработка разрешений (для новых версий)

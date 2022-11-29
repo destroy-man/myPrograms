@@ -8,6 +8,10 @@
         <variable
             name="mainActivity"
             type="ru.korobeynikov.databasegames.MainActivity" />
+
+        <variable
+            name="mainViewModel"
+            type="ru.korobeynikov.databasegames.MainViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -187,7 +191,8 @@
                 <TextView
                     android:id="@+id/showGamesText"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    app:games="@{mainViewModel.listDisplayedGames}" />
 
             </HorizontalScrollView>
         </ScrollView>

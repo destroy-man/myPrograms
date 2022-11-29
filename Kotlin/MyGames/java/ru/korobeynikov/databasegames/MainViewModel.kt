@@ -1,18 +1,26 @@
 package ru.korobeynikov.databasegames
 
+import androidx.databinding.ObservableArrayList
+import androidx.databinding.ObservableList
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.*
 
 class MainViewModel(private val mainModel: MainModel, private val scope: CoroutineScope) : ViewModel() {
 
-    val gamesLiveData = MutableLiveData<List<Game>>() //LiveData хранящая список игр
+    private lateinit var listGames: List<Game> //список всех игр
+    var listDisplayedGames: ObservableList<Game> = ObservableArrayList() //список игр для отображения
     val messageLiveData = MutableLiveData<String>() //LiveData хранящая сообщения
-    private lateinit var listGames: List<Game> //список игр
+
+    //Изменение списка игр для отображения
+    private fun loadData(displayedGames: List<Game>) {
+        listDisplayedGames.clear()
+        listDisplayedGames.addAll(displayedGames)
+    }
 
     fun getGames() {
         listGames = mainModel.getGamesFromDB()
-        gamesLiveData.postValue(listGames)
+        loadData(listGames)
     }
 
     fun filterGames(nameGameText: String, ratingGameText: String, yearGameText: String,
@@ -29,7 +37,7 @@ class MainViewModel(private val mainModel: MainModel, private val scope: Corouti
         if (isSort)
             filterListGames = filterListGames.sortedWith(compareByDescending(Game::rating)
                 .thenBy(Game::genre).thenByDescending(Game::year).thenByDescending(Game::id))
-        gamesLiveData.value = filterListGames
+        loadData(filterListGames)
     }
 
     fun addGame(nameGameText: String, ratingGameText: String, yearGameText: String, genreId: Int) {
