@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Espresso</string>
+    <string name="empty_text">Text is empty</string>
+    <string name="buttonName">Button</string>
+</resources>
