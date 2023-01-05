@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">LayoutFiles</string>
+    <string name="vertical_orientation">Вертикальная ориентация экрана</string>
+    <string name="horizontal_orientation">Горизонтальная ориентация экрана</string>
+    <string name="button1Text">Button1</string>
+    <string name="button2Text">Button2</string>
+    <string name="button3Text">Button3</string>
+    <string name="button4Text">Button4</string>
+</resources>
