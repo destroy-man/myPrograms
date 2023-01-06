@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Layouts</string>
+    <string name="buttonText">Button</string>
+    <string name="textViewText">TextView</string>
+    <string name="checkBoxText">CheckBox</string>
+    <string name="radioButtonText">RadioButton</string>
+    <string name="labelText">Type here:</string>
+    <string name="buttonOkText">OK</string>
+    <string name="buttonCancelText">Cancel</string>
+</resources>
