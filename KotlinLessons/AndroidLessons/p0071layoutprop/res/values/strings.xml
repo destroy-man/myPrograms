@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">LayoutProp</string>
+    <string name="buttonText">Button</string>
+    <string name="buttonMarginText">Margin</string>
+    <string name="buttonGravityTopLeftText">gravity = top left</string>
+    <string name="buttonGravityTopRightText">gravity = top right</string>
+    <string name="buttonGravityBottomLeftText">gravity = bottom left</string>
+    <string name="buttonGravityBottomRightText">gravity = bottom right</string>
+    <string name="buttonGravityCenterText">gravity = center</string>
+    <string name="buttonB1Text">B1</string>
+    <string name="buttonB2Text">B2</string>
+    <string name="buttonB3Text">B3</string>
+</resources>

@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">ViewById</string>
+    <string name="buttonText">Button</string>
+    <string name="checkBoxText">CheckBox</string>
+    <string name="newButtonText">New text in TextView</string>
+    <string name="newCheckBoxText">My button</string>
+</resources>
