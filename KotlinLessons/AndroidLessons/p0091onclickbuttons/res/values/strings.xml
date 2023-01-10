@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">OnClickButtons</string>
+    <string name="textViewText">TextView</string>
+    <string name="buttonOk">OK</string>
+    <string name="buttonCancel">Cancel</string>
+    <string name="clickOk">Нажата кнопка OK</string>
+    <string name="clickCancel">Нажата кнопка Cancel</string>
+</resources>
