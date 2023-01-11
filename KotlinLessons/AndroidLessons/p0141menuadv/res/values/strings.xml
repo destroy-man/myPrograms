@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">MenuAdv</string>
+    <string name="menuItemAdd">add</string>
+    <string name="menuItemEdit">edit</string>
+    <string name="menuItemDelete">delete</string>
+    <string name="menuItemCopy">copy</string>
+    <string name="menuItemPaste">paste</string>
+    <string name="menuItemExit">exit</string>
+    <string name="checkBoxMenuText">расширенное меню</string>
+</resources>
