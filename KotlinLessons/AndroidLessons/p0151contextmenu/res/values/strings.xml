@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">ContextMenu</string>
+    <string name="colorRed">Red</string>
+    <string name="colorGreen">Green</string>
+    <string name="colorBlue">Blue</string>
+    <string name="size22">22</string>
+    <string name="size26">26</string>
+    <string name="size30">30</string>
+    <string name="textColorText">Text color</string>
+    <string name="textSizeText">Text size</string>
+    <string name="clickItemRed">Text color = red</string>
+    <string name="clickItemGreen">Text color = green</string>
+    <string name="clickItemBlue">Text color = blue</string>
+    <string name="clickItem22">Text size = 22</string>
+    <string name="clickItem26">Text size = 26</string>
+    <string name="clickItem30">Text size = 30</string>
+</resources>
