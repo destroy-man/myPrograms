@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">DynamicLayout3</string>
+    <string name="button1Text">Button1</string>
+    <string name="button2Text">Button2</string>
+</resources>

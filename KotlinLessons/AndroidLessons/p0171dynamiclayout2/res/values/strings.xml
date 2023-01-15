@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">DynamicLayout2</string>
+    <string name="radioButtonLeft">Left</string>
+    <string name="radioButtonCenter">Center</string>
+    <string name="radioButtonRight">Right</string>
+    <string name="buttonCreate">Create</string>
+    <string name="buttonClear">Clear</string>
+</resources>
