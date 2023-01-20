@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">IntentExtras</string>
+    <string name="textViewText">TextView</string>
+    <string name="textViewInputYourName">Input your Name</string>
+    <string name="textViewFirstName">First Name</string>
+    <string name="textViewLastName">Last Name</string>
+    <string name="buttonSubmit">Submit</string>
+</resources>
