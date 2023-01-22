@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">ActivityResult</string>
+    <string name="buttonLeft">Left</string>
+    <string name="buttonCenter">Center</string>
+    <string name="buttonRight">Right</string>
+    <string name="buttonRed">Red</string>
+    <string name="buttonGreen">Green</string>
+    <string name="buttonBlue">Blue</string>
+    <string name="hello">Hello World</string>
+    <string name="buttonColor">Color</string>
+    <string name="buttonAlignment">Alignment</string>
+</resources>
