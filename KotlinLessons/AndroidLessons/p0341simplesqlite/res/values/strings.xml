@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">SimpleSQLite</string>
+    <string name="textViewName">Name</string>
+    <string name="textViewEmail">Email</string>
+    <string name="buttonAdd">Add</string>
+    <string name="buttonRead">Read</string>
+    <string name="buttonClear">Clear</string>
+</resources>
