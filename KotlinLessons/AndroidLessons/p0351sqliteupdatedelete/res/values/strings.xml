@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">SQLiteUpdateDelete</string>
+    <string name="textViewID">ID</string>
+    <string name="buttonUpdate">Update</string>
+    <string name="buttonDelete">Delete</string>
+    <string name="textViewName">Name</string>
+    <string name="textViewEmail">Email</string>
+    <string name="buttonAdd">Add</string>
+    <string name="buttonRead">Read</string>
+    <string name="buttonClear">Clear</string>
+</resources>
