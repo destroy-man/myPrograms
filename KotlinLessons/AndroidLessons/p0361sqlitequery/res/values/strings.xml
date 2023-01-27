@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">SQLiteQuery</string>
+    <string name="textViewCountryDirectory">Справочник стран</string>
+    <string name="buttonAllRecords">Все записи</string>
+    <string name="buttonFunction">Функция</string>
+    <string name="buttonPopulationMore"><![CDATA[Население >]]></string>
+    <string name="buttonPopulationByRegion">Население по региону</string>
+    <string name="buttonPopulationByRegionMore"><![CDATA[Население по региону >]]></string>
+    <string name="buttonSorting">Сортировка</string>
+    <string name="radioButtonName">Наименование</string>
+    <string name="radioButtonPopulation">Население</string>
+    <string name="radioButtonRegion">Регион</string>
+</resources>
