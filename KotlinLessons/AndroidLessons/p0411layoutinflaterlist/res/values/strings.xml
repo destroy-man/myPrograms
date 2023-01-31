@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">LayoutInflaterList</string>
+    <string name="textTextView">TextView</string>
+    <string name="textViewStaffList">Staff list</string>
+</resources>

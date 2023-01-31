@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">LayoutInflater</string>
+    <string name="textViewLayout">Layout with TextView</string>
+    <string name="textViewConstraintLayout">Constraint Layout:</string>
+</resources>
