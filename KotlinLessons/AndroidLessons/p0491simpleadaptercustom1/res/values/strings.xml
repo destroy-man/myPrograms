@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">SimpleAdapterCustom1</string>
+    <string name="imageViewDirection">Direction</string>
+    <string name="textViewText">TextView</string>
+</resources>
