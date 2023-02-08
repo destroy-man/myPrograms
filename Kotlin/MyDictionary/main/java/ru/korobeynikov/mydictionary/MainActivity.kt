@@ -54,12 +54,15 @@ class MainActivity : AppCompatActivity() {
         mainPresenter.getListWords()
         //Фильтр по введенным символам в поле Слово
         originalText.addTextChangedListener(object : TextWatcher {
+
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun afterTextChanged(text: Editable?) {
                 findWord = text.toString()
+                if (findWord.indexOf('(') != -1)
+                    findWord = findWord.substring(findWord.indexOf('(') - 2)
                 fieldName = "original"
                 val allWords = mainPresenter.getFilterListWords(findWord, fieldName,
                     cutList.isChecked, showTranslation.isChecked, countWordsText.text.toString())
@@ -68,6 +71,7 @@ class MainActivity : AppCompatActivity() {
         })
         //Фильтр по введенным символам в поле Перевод
         translationText.addTextChangedListener(object : TextWatcher {
+
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {}
@@ -82,6 +86,7 @@ class MainActivity : AppCompatActivity() {
         })
         //Ограничение на количество слов
         countWordsText.addTextChangedListener(object : TextWatcher {
+
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {}
@@ -94,17 +99,36 @@ class MainActivity : AppCompatActivity() {
         })
         //Добавление одного слова
         addWord.setOnClickListener {
-            if (originalText.text.isEmpty() || translationText.text.isEmpty())
-                showMessage("Для добавления слова в словарь нужно заполнить поля Слово и Перевод!")
-            else
-                mainPresenter.addWord(originalText.text.toString(), translationText.text.toString())
+            if (originalText.text.isEmpty())
+                showMessage("Для добавления слова в словарь нужно заполнить поле Слово!")
+            else {
+                if (originalText.text.toString().indexOf('(') == -1 && translationText.text.isEmpty())
+                    showMessage("Для добавления слова в словарь нужно заполнить поле Перевод!")
+                else {
+                    var originalWord = originalText.text.toString()
+                    var transcriptionWord = ""
+                    if (originalWord.indexOf('(') != -1) {
+                        val begin = originalWord.indexOf('(')
+                        val end = originalWord.indexOf(')')
+                        transcriptionWord = originalWord.substring(begin + 1, end)
+                        originalWord = originalWord.substring(0, begin - 1)
+                    }
+                    mainPresenter.addWord(originalWord, transcriptionWord, translationText.text.toString())
+                }
+            }
         }
         //Удаление одного слова
         deleteWord.setOnClickListener {
             if (originalText.text.isEmpty())
                 showMessage("Для удаления слова из словаря нужно заполнить поле Слово!")
-            else
-                mainPresenter.deleteWord(originalText.text.toString())
+            else {
+                var originalWord = originalText.text.toString()
+                if (originalWord.indexOf('(') != -1) {
+                    val begin = originalWord.indexOf('(')
+                    originalWord = originalWord.substring(0, begin - 1)
+                }
+                mainPresenter.deleteWord(originalWord)
+            }
         }
         //Сохранение слов в файл
         saveWordsInFile.setOnClickListener {
@@ -141,7 +165,7 @@ class MainActivity : AppCompatActivity() {
     //Получение и отображение списка слов
     fun showListWords(allWords: StringBuilder) {
         showWordsText.text = allWords.toString()
-        countWords.text = "Слов: ${allWords.split("\n").size - 1}"
+        countWords.text = getString(R.string.countWords, allWords.split("\n").size - 1)
     }
 
     //Обработка разрешений (для новых версий)

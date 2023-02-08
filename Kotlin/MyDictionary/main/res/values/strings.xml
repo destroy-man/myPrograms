@@ -9,4 +9,5 @@
     <string name="loadWordTitle">Добавить слова из файла</string>
     <string name="showTranslationTitle">Показать перевод</string>
     <string name="cutListTitle">Обрезать список</string>
+    <string name="countWords">Слов: %1$d</string>
 </resources>

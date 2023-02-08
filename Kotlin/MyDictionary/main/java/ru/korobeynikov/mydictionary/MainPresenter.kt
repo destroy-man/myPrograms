@@ -33,9 +33,13 @@ class MainPresenter(private var mainModel: MainModel, private val scope: Corouti
     //Фильтрация списка слов без параметров
     private fun getFilterListWords(): StringBuilder {
         val allWords = StringBuilder()
-        if (listWords.isNotEmpty())
-            for (index in listWords.indices)
-                allWords.append(" ${listWords[index].original} = ${listWords[index].translation}\n")
+        if (listWords.isNotEmpty()) {
+            for (word in listWords)
+                if (word.transcription.isNotEmpty())
+                    allWords.append(" ${word.original} (${word.transcription}) = ${word.translation}\n")
+                else
+                    allWords.append(" ${word.original} = ${word.translation}\n")
+        }
         return allWords
     }
 
@@ -60,37 +64,56 @@ class MainPresenter(private var mainModel: MainModel, private val scope: Corouti
             if (cutList) {
                 indexCut =
                     if (fieldName == "original")
-                        filterListWords.indexOf(filterListWords.find { word -> word.original
-                            .startsWith(findWord) })
+                        filterListWords.indexOf(filterListWords.find { word ->
+                            word.original.startsWith(findWord)
+                        })
                     else
-                        filterListWords.indexOf(filterListWords.find { word -> word.translation
-                            .startsWith(findWord) })
+                        filterListWords.indexOf(filterListWords.find { word ->
+                            word.translation.startsWith(findWord)
+                        })
                 if (indexCut < 0) indexCut = 0
             }
             var lastIndex = indexCut + countWordsShow
             if (countWordsShow == -1 || lastIndex > filterListWords.size)
                 lastIndex = filterListWords.size
-            for (index in indexCut until lastIndex)
+            for (index in indexCut until lastIndex) {
+                val word = filterListWords[index]
                 if (showTranslation) {
-                    if (fieldName == "original")
-                        allWords.append(" ${filterListWords[index].original} = " +
-                                "${filterListWords[index].translation}\n")
-                    else
-                        allWords.append(" ${filterListWords[index].translation} = " +
-                                "${filterListWords[index].original}\n")
+                    if (fieldName == "original") {
+                        if (word.transcription.isNotEmpty())
+                            allWords.append(" ${word.original} (${word.transcription}) = " +
+                                    "${word.translation}\n")
+                        else
+                            allWords.append(" ${word.original} = ${word.translation}\n")
+                    } else {
+                        if (word.transcription.isNotEmpty())
+                            allWords.append(" ${word.translation} = ${word.original} " +
+                                    "(${word.transcription})\n")
+                        else
+                            allWords.append(" ${word.translation} = ${word.original}\n")
+                    }
                 } else if (fieldName == "translation")
-                    allWords.append(" ${filterListWords[index].translation}\n")
-                else
-                    allWords.append(" ${filterListWords[index].original}\n")
+                    allWords.append(" ${word.translation}\n")
+                else {
+                    if (word.transcription.isNotEmpty())
+                        allWords.append(" ${word.original} (${word.transcription})\n")
+                    else
+                        allWords.append(" ${word.original}\n")
+                }
+            }
         }
         return allWords
     }
 
-    fun addWord(originalText: String, translationText: String) {
-        scope.launch {
-            mainModel.addWordInRealm(originalText, translationText)
-            getListWords()
-        }
+    fun addWord(originalText: String, transcriptionText: String, translationText: String) {
+        val word = listWords.find { word -> word.original == originalText }
+        if (word == null && translationText.isEmpty())
+            view?.showMessage("Для добавления слова в словарь нужно заполнить поле Перевод!")
+        else
+            scope.launch {
+                mainModel.addWordInRealm(originalText, transcriptionText, translationText)
+                getListWords()
+            }
     }
 
     fun deleteWord(originalText: String) {

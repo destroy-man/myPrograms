@@ -15,20 +15,20 @@ class MainModel(private var config: RealmConfiguration) {
         val listWords = ArrayList<Word>()
         realm = Realm.getInstance(config)
         realm.executeTransactionAwait(Dispatchers.Default) { realmTransaction ->
-            val listWordsFromRealm = realmTransaction.where(WordRealm::class.java)
-                .sort("original").findAll()
+            val listWordsFromRealm =
+                realmTransaction.where(WordRealm::class.java).sort("original").findAll()
             if (listWordsFromRealm.isNotEmpty())
                 for (word in listWordsFromRealm)
-                    listWords.add(Word(word.original, word.translation))
+                    listWords.add(Word(word.original, word.transcription, word.translation))
         }
         realm.close()
         return listWords
     }
 
-    suspend fun addWordInRealm(originalText: String, translationText: String) {
+    suspend fun addWordInRealm(originalText: String, transcriptionText: String, translationText: String) {
         realm = Realm.getInstance(config)
         realm.executeTransactionAwait(Dispatchers.Default) { realmTransaction ->
-            addWord(realmTransaction, originalText, translationText)
+            addWord(realmTransaction, originalText, transcriptionText, translationText)
         }
         realm.close()
     }
@@ -36,8 +36,8 @@ class MainModel(private var config: RealmConfiguration) {
     suspend fun deleteWordFromRealm(originalText: String) {
         realm = Realm.getInstance(config)
         realm.executeTransactionAwait(Dispatchers.Default) { realmTransaction ->
-            val word = realmTransaction.where(WordRealm::class.java).equalTo("original",
-                originalText).sort("original").findFirst()
+            val word = realmTransaction.where(WordRealm::class.java)
+                .equalTo("original", originalText).sort("original").findFirst()
             word?.deleteFromRealm()
         }
         realm.close()
@@ -52,7 +52,10 @@ class MainModel(private var config: RealmConfiguration) {
             if (listWords.isNotEmpty()) {
                 val writer = BufferedWriter(FileWriter(fileDictionary))
                 for (word in listWords) {
-                    writer.write("${word.original}=${word.translation}")
+                    if (word.transcription.isNotEmpty())
+                        writer.write("${word.original} (${word.transcription})=${word.translation}")
+                    else
+                        writer.write("${word.original}=${word.translation}")
                     writer.newLine()
                 }
                 writer.close()
@@ -82,9 +85,16 @@ class MainModel(private var config: RealmConfiguration) {
                 realm.executeTransactionAwait(Dispatchers.Default) { realmTransaction ->
                     for (strWord in allWords.split("\n")) {
                         if (strWord.isEmpty()) continue
-                        val originalWord = strWord.split("=")[0]
+                        var originalWord = strWord.split("=")[0]
+                        var transcriptionWord = ""
+                        if (originalWord.indexOf('(') != -1) {
+                            val begin = originalWord.indexOf('(')
+                            val end = originalWord.indexOf(')')
+                            transcriptionWord = originalWord.substring(begin + 1, end)
+                            originalWord = originalWord.substring(0, begin - 1)
+                        }
                         val translationWord = strWord.split("=")[1]
-                        addWord(realmTransaction, originalWord, translationWord)
+                        addWord(realmTransaction, originalWord, transcriptionWord, translationWord)
                     }
                 }
                 realm.close()
@@ -95,14 +105,24 @@ class MainModel(private var config: RealmConfiguration) {
         }
     }
 
-    private fun addWord(realmTransaction: Realm, originalText: String, translationText: String) {
+    private fun addWord(realmTransaction: Realm, originalText: String, transcriptionText: String,
+                        translationText: String) {
         val word = realmTransaction.where(WordRealm::class.java)
             .equalTo("original", originalText).findFirst()
         if (word != null) {
-            word.translation = translationText
+            if (transcriptionText.isNotEmpty())
+                word.transcription = transcriptionText
+            if (translationText.isNotEmpty())
+                word.translation = translationText
             realmTransaction.copyToRealmOrUpdate(word)
         } else
-            realmTransaction.copyToRealmOrUpdate(WordRealm(ObjectId().toHexString(), originalText,
-                translationText))
+            realmTransaction.copyToRealmOrUpdate(
+                WordRealm(
+                    ObjectId().toHexString(),
+                    originalText,
+                    transcriptionText,
+                    translationText
+                )
+            )
     }
 }

@@ -7,5 +7,6 @@ open class WordRealm(
     @PrimaryKey
     var id: String = "",
     var original: String = "",
+    var transcription: String = "",
     var translation: String = ""
 ) : RealmObject()
