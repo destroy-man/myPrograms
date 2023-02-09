@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">SimpleAdapterData</string>
+    <string name="imageViewAndroidImage">Android image</string>
+    <string name="buttonAddRecord">Добавить запись</string>
+</resources>
