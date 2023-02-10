@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">SimpleCursorAdapter</string>
+    <string name="add_record">Добавить запись</string>
+    <string name="delete_record">Удалить запись</string>
+    <string name="change_record">Изменить запись</string>
+    <string name="imageViewAndroidImage">Android image</string>
+    <string name="positionRecord">Позиция записи:</string>
+    <string name="textRecord">Текст записи</string>
+</resources>
