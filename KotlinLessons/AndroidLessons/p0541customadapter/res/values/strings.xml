@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">CustomAdapter</string>
+    <string name="box">Корзина</string>
+    <string name="imageViewAndroidImage">Android image</string>
+</resources>
