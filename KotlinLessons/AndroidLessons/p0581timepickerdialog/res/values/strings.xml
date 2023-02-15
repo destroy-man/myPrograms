@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">TimePickerDialog</string>
+    <string name="time_text">Time is %1$d hours %2$d minutes</string>
+</resources>
