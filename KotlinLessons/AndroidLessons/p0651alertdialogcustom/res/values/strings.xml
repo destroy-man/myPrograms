@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">AlertDialogCustom</string>
+    <string name="add">Добавить</string>
+    <string name="remove">Удалить</string>
+    <string name="countTextView">Кол-во TextView = %1$d</string>
+    <string name="textViewText">TextView %1$d</string>
+</resources>
