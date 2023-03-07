@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">ProgressDialog</string>
+    <string name="dflt">Обычный</string>
+    <string name="horiz">Горизонтальный</string>
+    <string name="percent">%1$d %%</string>
+    <string name="progress">%1$d/%2$d</string>
+</resources>
