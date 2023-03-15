@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="view"
+            type="ru.korobeynikov.p0751files.MainActivity" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+        <Button
+            android:id="@+id/btnWrite"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:onClick="@{view::clickButton}"
+            android:text="@string/write_file"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/btnRead"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:onClick="@{view::clickButton}"
+            android:text="@string/read_file"
+            app:layout_constraintStart_toEndOf="@+id/btnWrite"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/btnWriteSD"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:onClick="@{view::clickButton}"
+            android:text="@string/write_file_sd"
+            app:layout_constraintEnd_toStartOf="@+id/btnReadSD"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnWrite" />
+
+        <Button
+            android:id="@+id/btnReadSD"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:onClick="@{view::clickButton}"
+            android:text="@string/read_file_sd"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/btnWriteSD"
+            app:layout_constraintTop_toBottomOf="@+id/btnRead" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
