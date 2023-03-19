@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">TabIntent</string>
+    <string name="text_fragment1">Это первый Fragment</string>
+    <string name="text_fragment2">Это второй Fragment</string>
+</resources>
