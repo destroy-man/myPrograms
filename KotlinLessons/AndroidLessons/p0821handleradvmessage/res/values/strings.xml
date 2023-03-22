@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">HandlerAdvMessage</string>
+    <string name="connect">Connect</string>
+    <string name="none">Not connected</string>
+    <string name="connecting">Connecting</string>
+    <string name="connected">Connected</string>
+    <string name="download_start">Start download %1$d files</string>
+    <string name="download_file">Downloading. Left %1$d files</string>
+    <string name="download_end">Download complete!</string>
+    <string name="download_none">No files for download</string>
+</resources>
