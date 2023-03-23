@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">HandlerRunnable</string>
+    <string name="info">Подробно</string>
+    <string name="tv_info_text">Count = %1$d</string>
+</resources>
