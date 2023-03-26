@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">AsyncTaskResult</string>
+    <string name="start">Start</string>
+    <string name="get">Result</string>
+    <string name="begin">Begin</string>
+    <string name="end">End. Result = %1$d</string>
+</resources>
