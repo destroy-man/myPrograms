@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">AsyncTaskStatus</string>
+    <string name="start">Start</string>
+    <string name="status">Status</string>
+    <string name="begin">Begin</string>
+    <string name="end">End</string>
+</resources>
