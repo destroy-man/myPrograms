@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">FragmentActivity</string>
+    <string name="frag1_text">Fragment 1</string>
+    <string name="frag2_text">Fragment 2</string>
+    <string name="log">Log</string>
+    <string name="find">Find</string>
+    <string name="access_fragment1">"Access from Fragment1"</string>
+    <string name="text_fragment2">Text from Fragment 2:%1$s</string>
+</resources>
