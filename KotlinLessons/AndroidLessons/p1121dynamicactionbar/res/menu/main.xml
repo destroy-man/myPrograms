@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group android:id="@+id/groupVsbl">
+        <item
+            android:id="@+id/item2"
+            android:icon="@android:drawable/ic_menu_call"
+            android:title="@string/menu_item2"
+            app:showAsAction="always|withText" />
+    </group>
+</menu>
