@@ -21,29 +21,14 @@ class MainPresenter(private var mainModel: MainModel, private val scope: Corouti
         view = null
     }
 
+    //Получение слов из БД
     fun getListWords() {
         scope.launch {
             listWords = mainModel.getWordsFromRealm()
-            withContext(Dispatchers.Main) {
-                view?.showListWords(getFilterListWords())
-            }
         }
     }
 
-    //Фильтрация списка слов без параметров
-    private fun getFilterListWords(): StringBuilder {
-        val allWords = StringBuilder()
-        if (listWords.isNotEmpty()) {
-            for (word in listWords)
-                if (word.transcription.isNotEmpty())
-                    allWords.append(" ${word.original} (${word.transcription}) = ${word.translation}\n")
-                else
-                    allWords.append(" ${word.original} = ${word.translation}\n")
-        }
-        return allWords
-    }
-
-    //Фильтрация списка слов с параметрами
+    //Фильтрация списка
     fun getFilterListWords(findWord: String, fieldName: String, cutList: Boolean,
                            showTranslation: Boolean, countWordShowString: String): StringBuilder {
         val filterListWords = if (!cutList) {

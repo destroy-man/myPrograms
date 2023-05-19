@@ -64,9 +64,12 @@ class MainActivity : AppCompatActivity() {
                 if (findWord.indexOf('(') != -1)
                     findWord = findWord.substring(findWord.indexOf('(') - 2)
                 fieldName = "original"
-                val allWords = mainPresenter.getFilterListWords(findWord, fieldName,
-                    cutList.isChecked, showTranslation.isChecked, countWordsText.text.toString())
-                showListWords(allWords)
+                if (haveParameters()) {
+                    val allWords = mainPresenter.getFilterListWords(findWord, fieldName,
+                        cutList.isChecked, showTranslation.isChecked, countWordsText.text.toString())
+                    showListWords(allWords)
+                } else
+                    showListWords(StringBuilder())
             }
         })
         //Фильтр по введенным символам в поле Перевод
@@ -79,9 +82,12 @@ class MainActivity : AppCompatActivity() {
             override fun afterTextChanged(text: Editable?) {
                 findWord = text.toString()
                 fieldName = "translation"
-                val allWords = mainPresenter.getFilterListWords(findWord, fieldName,
-                    cutList.isChecked, showTranslation.isChecked, countWordsText.text.toString())
-                showListWords(allWords)
+                if(haveParameters()) {
+                    val allWords = mainPresenter.getFilterListWords(findWord, fieldName,
+                        cutList.isChecked, showTranslation.isChecked, countWordsText.text.toString())
+                    showListWords(allWords)
+                } else
+                    showListWords(StringBuilder())
             }
         })
         //Ограничение на количество слов
@@ -92,9 +98,12 @@ class MainActivity : AppCompatActivity() {
             override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun afterTextChanged(text: Editable?) {
-                val allWords = mainPresenter.getFilterListWords(findWord, fieldName,
-                    cutList.isChecked, showTranslation.isChecked, countWordsText.text.toString())
-                showListWords(allWords)
+                if(haveParameters()) {
+                    val allWords = mainPresenter.getFilterListWords(findWord, fieldName,
+                        cutList.isChecked, showTranslation.isChecked, countWordsText.text.toString())
+                    showListWords(allWords)
+                } else
+                    showListWords(StringBuilder())
             }
         })
         //Добавление одного слова
@@ -150,15 +159,21 @@ class MainActivity : AppCompatActivity() {
         }
         //Отображение перевода
         showTranslation.setOnClickListener {
-            val allWords = mainPresenter.getFilterListWords(findWord, fieldName, cutList.isChecked,
-                showTranslation.isChecked, countWordsText.text.toString())
-            showListWords(allWords)
+            if(haveParameters()) {
+                val allWords = mainPresenter.getFilterListWords(findWord, fieldName,
+                    cutList.isChecked, showTranslation.isChecked, countWordsText.text.toString())
+                showListWords(allWords)
+            } else
+                showListWords(StringBuilder())
         }
         //Обрезание списка слов
         cutList.setOnClickListener {
-            val allWords = mainPresenter.getFilterListWords(findWord, fieldName, cutList.isChecked,
-                showTranslation.isChecked, countWordsText.text.toString())
-            showListWords(allWords)
+            if(haveParameters()) {
+                val allWords = mainPresenter.getFilterListWords(findWord, fieldName,
+                    cutList.isChecked, showTranslation.isChecked, countWordsText.text.toString())
+                showListWords(allWords)
+            } else
+                showListWords(StringBuilder())
         }
     }
 
@@ -197,6 +212,9 @@ class MainActivity : AppCompatActivity() {
     fun showMessage(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
+
+    //Проверка на наличия параметров для поиска в БД
+    fun haveParameters() = !(findWord.isEmpty() && countWordsText.text.toString().isEmpty())
 
     override fun onDestroy() {
         super.onDestroy()
