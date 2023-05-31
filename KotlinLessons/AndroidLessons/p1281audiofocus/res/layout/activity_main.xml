@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="view"
+            type="ru.korobeynikov.p1281audiofocus.MainActivity" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+        <Button
+            android:id="@+id/btnPlayMusic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{()->view.clickMusic()}"
+            android:text="@string/music"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/btnPlaySoundG"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{view::clickSound}"
+            android:text="@string/sound_gain"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnPlayMusic" />
+
+        <Button
+            android:id="@+id/btnPlaySoundGT"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{view::clickSound}"
+            android:text="@string/sound_gain_transient"
+            app:layout_constraintStart_toEndOf="@+id/btnPlaySoundG"
+            app:layout_constraintTop_toTopOf="@+id/btnPlaySoundG" />
+
+        <Button
+            android:id="@+id/btnPlaySoundGTD"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{view::clickSound}"
+            android:text="@string/sound_gain_transient_duck"
+            app:layout_constraintStart_toEndOf="@+id/btnPlaySoundGT"
+            app:layout_constraintTop_toTopOf="@+id/btnPlaySoundG" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
