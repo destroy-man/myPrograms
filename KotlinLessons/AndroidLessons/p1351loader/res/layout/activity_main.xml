@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="view"
+            type="ru.korobeynikov.p1351loader.MainActivity" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+        <TextView
+            android:id="@+id/tvTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <RadioGroup
+            android:id="@+id/rgTimeFormat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvTime"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvTime">
+
+            <RadioButton
+                android:id="@+id/rdShort"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/format_short" />
+
+            <RadioButton
+                android:id="@+id/rdLong"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/format_long" />
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/btnGetTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{()->view.getTimeClick()}"
+            android:text="@string/get_time"
+            app:layout_constraintStart_toStartOf="@+id/rgTimeFormat"
+            app:layout_constraintTop_toBottomOf="@+id/rgTimeFormat" />
+
+        <Button
+            android:id="@+id/btnObserver"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{view::observerClick}"
+            android:text="@string/observer"
+            app:layout_constraintStart_toStartOf="@+id/rgTimeFormat"
+            app:layout_constraintTop_toBottomOf="@+id/btnGetTime" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
