@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">ConstraintLayoutGuidelinesAspectRatio</string>
+    <string name="textview_text">TextView</string>
+</resources>
