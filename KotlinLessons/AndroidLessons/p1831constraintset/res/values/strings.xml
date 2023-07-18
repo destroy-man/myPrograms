@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">ConstraintSet</string>
+    <string name="button_text">Button</string>
+    <string name="textview_text">TextView</string>
+    <string name="textview_text2">TextView 2</string>
+    <string name="textview_text3">TextView 3</string>
+    <dimen name="some_margin">32dp</dimen>
+    <item name="guideline" type="id" />
+</resources>
