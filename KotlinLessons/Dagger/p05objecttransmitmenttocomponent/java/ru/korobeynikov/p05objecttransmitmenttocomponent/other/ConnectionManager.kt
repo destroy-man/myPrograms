@@ -1,0 +1,3 @@
+package ru.korobeynikov.p05objecttransmitmenttocomponent.other
+
+class ConnectionManager
