@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">AssistedInject</string>
+    <string name="button_text">Go to order</string>
+</resources>
