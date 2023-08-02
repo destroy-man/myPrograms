@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">HiltUnderTheHood</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="user_activity_text">User activity</string>
+    <string name="order_fragment_text">Order fragment</string>
+    <string name="go_to_user_text">Go to user</string>
+</resources>
