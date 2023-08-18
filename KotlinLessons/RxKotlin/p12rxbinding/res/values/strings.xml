@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">RxBinding</string>
+    <string name="menuItemAdd">add</string>
+    <string name="menuItemEdit">edit</string>
+    <string name="menuItemDelete">delete</string>
+    <string name="radio_button_one">One</string>
+    <string name="radio_button_two">Two</string>
+    <string name="radio_button_three">Three</string>
+</resources>
