@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ViewModel</string>
+    <string name="button_text">Button</string>
+    <string name="textview_text">TextView</string>
+</resources>
