@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">AndroidDataBindingAccessToView</string>
+    <string name="empty_address">Нет адреса</string>
+</resources>
