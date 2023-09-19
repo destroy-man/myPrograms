@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">AndroidDataBindingObservableFields</string>
+    <string name="enabled">enabled</string>
+    <string name="show_employee">Показать сотрудника</string>
+</resources>

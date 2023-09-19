@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">AndroidDataBindingEventProcessing</string>
+    <string name="delete">Удалить</string>
+    <string name="enabled">Включить</string>
+</resources>
