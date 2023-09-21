@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">NavigationArchitectureComponentIntroduction</string>
+    <string name="fragment1_text">Fragment 1</string>
+    <string name="fragment2_text">Fragment 2</string>
+    <string name="fragment3_text">Fragment 3</string>
+    <string name="fragment4_text">Fragment 4</string>
+    <string name="fragment5_text">Fragment 5</string>
+    <string name="button_back">Back</string>
+    <string name="button_next">Next</string>
+</resources>

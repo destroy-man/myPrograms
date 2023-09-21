@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_graph"
+    app:startDestination="@id/fragment1">
+
+    <fragment
+        android:id="@+id/fragment1"
+        android:name="ru.korobeynikov.p24navigationarchitecturecomponentintroduction.main_graph.Fragment1"
+        android:label="Fragment1"
+        tools:layout="@layout/fragment1">
+        <action
+            android:id="@+id/action_fragment1_to_fragment2"
+            app:destination="@id/fragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragment2"
+        android:name="ru.korobeynikov.p24navigationarchitecturecomponentintroduction.main_graph.Fragment2"
+        android:label="Fragment2"
+        tools:layout="@layout/fragment2" />
+    <fragment
+        android:id="@+id/fragment3"
+        android:name="ru.korobeynikov.p24navigationarchitecturecomponentintroduction.main_graph.Fragment3"
+        android:label="Fragment3"
+        tools:layout="@layout/fragment3" />
+    <activity
+        android:id="@+id/secondActivity"
+        android:name="ru.korobeynikov.p24navigationarchitecturecomponentintroduction.second_graph.SecondActivity"
+        android:label="SecondActivity"
+        tools:layout="@layout/activity_second" />
+</navigation>

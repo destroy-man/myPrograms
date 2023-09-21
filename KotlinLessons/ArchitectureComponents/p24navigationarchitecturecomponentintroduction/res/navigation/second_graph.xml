@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/second_graph"
+    app:startDestination="@id/fragment4">
+
+    <fragment
+        android:id="@+id/fragment4"
+        android:name="ru.korobeynikov.p24navigationarchitecturecomponentintroduction.second_graph.Fragment4"
+        android:label="Fragment4"
+        tools:layout="@layout/fragment4" />
+    <fragment
+        android:id="@+id/fragment5"
+        android:name="ru.korobeynikov.p24navigationarchitecturecomponentintroduction.second_graph.Fragment5"
+        android:label="Fragment5"
+        tools:layout="@layout/fragment5" />
+</navigation>
