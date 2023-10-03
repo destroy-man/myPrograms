@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">MemoryProfilerDump</string>
+    <string name="button_create">Create</string>
+</resources>
