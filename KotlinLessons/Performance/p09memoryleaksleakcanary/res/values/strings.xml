@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">MemoryLeaksLeakCanary</string>
+    <string name="button_test">Test</string>
+</resources>
