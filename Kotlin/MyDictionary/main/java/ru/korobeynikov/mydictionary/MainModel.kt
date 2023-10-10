@@ -89,7 +89,7 @@ class MainModel(private var config: RealmConfiguration) {
                         var transcriptionWord = ""
                         if (originalWord.indexOf('(') != -1) {
                             val begin = originalWord.indexOf('(')
-                            val end = originalWord.indexOf(')')
+                            val end = originalWord.lastIndex
                             transcriptionWord = originalWord.substring(begin + 1, end)
                             originalWord = originalWord.substring(0, begin - 1)
                         }

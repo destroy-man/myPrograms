@@ -2,6 +2,7 @@ package ru.korobeynikov.mydictionary
 
 import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -34,15 +35,51 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var mainPresenter: MainPresenter //объект Presenter
 
-    //Обработка разрешений (для старых версий)
+    //Обработка разрешений
+    private fun checkPermissions(permissions: Array<String>) = permissions.all {
+        ActivityCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
+    }
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>,
                                             grantResults: IntArray) {
-        when (requestCode) {
-            REQUEST_CODE_PERMISSION_WRITE_STORAGE -> mainPresenter.saveWords(path)
-            REQUEST_CODE_PERMISSION_READ_STORAGE -> mainPresenter.loadWords(path)
+        if (grantResults.isNotEmpty()) {
+            val allPermissionsGranted = grantResults.all { it == PackageManager.PERMISSION_GRANTED }
+            if (allPermissionsGranted) {
+                when (requestCode) {
+                    REQUEST_CODE_PERMISSION_WRITE_STORAGE -> mainPresenter.saveWords(path)
+                    REQUEST_CODE_PERMISSION_READ_STORAGE -> mainPresenter.loadWords(path)
+                }
+            } else {
+                Toast.makeText(this,
+                    "Необходимо получить разрешения на чтение и запись!", Toast.LENGTH_SHORT).show()
+                finish()
+            }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    private fun processPermission() {
+        try {
+            val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
+            intent.addCategory("android.intent.category.DEFAULT")
+            intent.data = Uri.parse(String.format("package:%s", this.packageName))
+            launcherManageStorage.launch(intent)
+        } catch (e: Exception) {
+            val intent = Intent()
+            intent.action = Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
+            launcherManageStorage.launch(intent)
+        }
+    }
+
+    private val launcherManageStorage =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (numOperation == REQUEST_CODE_PERMISSION_WRITE_STORAGE) {
+                mainPresenter.saveWords(path)
+            } else if (numOperation == REQUEST_CODE_PERMISSION_READ_STORAGE) {
+                mainPresenter.loadWords(path)
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -143,19 +180,35 @@ class MainActivity : AppCompatActivity() {
         saveWordsInFile.setOnClickListener {
             numOperation = REQUEST_CODE_PERMISSION_WRITE_STORAGE
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                processPermission()
-            } else
-                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission
-                    .WRITE_EXTERNAL_STORAGE), REQUEST_CODE_PERMISSION_WRITE_STORAGE)
+                if (Environment.isExternalStorageManager())
+                    mainPresenter.saveWords(path)
+                else
+                    processPermission()
+            } else {
+                val permissions = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                if (checkPermissions(permissions))
+                    mainPresenter.saveWords(path)
+                else
+                    ActivityCompat.requestPermissions(this@MainActivity, permissions,
+                        REQUEST_CODE_PERMISSION_WRITE_STORAGE)
+            }
         }
         //Загрузка слов из файла
         loadWordsFromFile.setOnClickListener {
             numOperation = REQUEST_CODE_PERMISSION_READ_STORAGE
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                processPermission()
-            } else
-                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission
-                    .READ_EXTERNAL_STORAGE), REQUEST_CODE_PERMISSION_READ_STORAGE)
+                if (Environment.isExternalStorageManager())
+                    mainPresenter.loadWords(path)
+                else
+                    processPermission()
+            } else {
+                val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+                if (checkPermissions(permissions))
+                    mainPresenter.loadWords(path)
+                else
+                    ActivityCompat.requestPermissions(this@MainActivity, permissions,
+                        REQUEST_CODE_PERMISSION_READ_STORAGE)
+            }
         }
         //Отображение перевода
         showTranslation.setOnClickListener {
@@ -182,31 +235,6 @@ class MainActivity : AppCompatActivity() {
         showWordsText.text = allWords.toString()
         countWords.text = getString(R.string.countWords, allWords.split("\n").size - 1)
     }
-
-    //Обработка разрешений (для новых версий)
-    @RequiresApi(Build.VERSION_CODES.R)
-    private fun processPermission() {
-        try {
-            val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
-            intent.addCategory("android.intent.category.DEFAULT")
-            intent.data = Uri.parse(String.format("package:%s", this.packageName))
-            launcherManageStorage.launch(intent)
-        } catch (e: Exception) {
-            val intent = Intent()
-            intent.action = Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
-            launcherManageStorage.launch(intent)
-        }
-    }
-
-    //Объект для работы после получения разрешения на работу с хранилищем данных (для новых версий)
-    private val launcherManageStorage =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (numOperation == REQUEST_CODE_PERMISSION_WRITE_STORAGE) {
-                mainPresenter.saveWords(path)
-            } else if (numOperation == REQUEST_CODE_PERMISSION_READ_STORAGE) {
-                mainPresenter.loadWords(path)
-            }
-        }
 
     //Вывод сообщения
     fun showMessage(message: String) {
