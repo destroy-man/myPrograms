@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">CoroutinesRoom</string>
+    <string name="button_insert">Insert</string>
+</resources>
