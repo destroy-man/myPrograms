@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">CoroutinesSharedFlowStateFlow</string>
+    <string name="button_emit">Emit</string>
+</resources>
