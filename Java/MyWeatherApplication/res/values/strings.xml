@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">MyWeatherApplication</string>
+    <string name="change_city">Change city</string>
+    <string name="open_weather_maps_app_id">ef6abf75ee9b04bd86ef5d35dc42c3b3</string>
+    <string name="place_not_found">Sorry, no weather data found.</string>
+</resources>
