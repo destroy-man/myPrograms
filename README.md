@@ -1,13 +1,12 @@
 # myPrograms
-Данный гитхаб служит для хранения моих учебных проектов.
-Содержимое гитхаба:
-1. Java/Chat-приложение-чат.
-2. Java/DataSensorsApplication-предназначена для получения и сохранения геолокационных данных.
-3. Java/LazyKing-решение задачки ленивого короля.
-4. Java/Projects-различные проекты.
-5. Java/RssNews-предназначена для получения и отображения rss-ленты.
-6. Kotlin/AuthGoogle-программа, осуществляющая авторизацию через google, а после авторизации позволяет искать пользователей в GitHub.
-7. Kotlin/MyAchievements-предназначена для хранения достижений и отображения их в порядке редкости.
-8. Kotlin/MyDictionary-предназначена для изучения иностранного языка.
-9. Kotlin/MyGames-предназначена для хранения, фильтрации и сортировки игр.
-10. KotlinLessons-список решений практических работ с различных курсов.
+This repository used to storing my learning projects. Repository content:
+1. Java/Chat-application-chat.
+2. Java/DataSensorsApplication-application for receiving and saving geo data.
+3. Java/LazyKing-solving lazy king task.
+4. Java/Projects-different projects.
+5. Java/RssNews-application for receiving and showing rss-tape.
+6. Kotlin/AuthGoogle-application, authorized across google, and after authorization allows find users in GitHub.
+7. Kotlin/MyAchievements-application for storing achievements and showing them by rarity order.
+8. Kotlin/MyDictionary-application for learning foreign languages.
+9. Kotlin/MyGames-application for storing, filtering and sorting games.
+10. KotlinLessons-list of practical work solvings from different courses.
