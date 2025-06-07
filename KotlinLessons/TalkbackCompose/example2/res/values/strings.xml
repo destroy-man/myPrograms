@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">app2</string>
+    <string name="image_content_description">Это картинка</string>
+    <string name="component_content_description">Это компонент</string>
+    <string name="component_state_enabled">Компонент включен</string>
+    <string name="component_state_disabled">Компонент выключен</string>
+    <string name="delete">Удалить</string>
+</resources>
