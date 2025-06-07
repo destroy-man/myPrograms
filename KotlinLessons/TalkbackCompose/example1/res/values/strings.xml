@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">app1</string>
+    <string name="close_icon_content_description">Закрыть</string>
+    <string name="action_read_article_content_description">Прочитать статью</string>
+    <string name="cd_navigate_up_content_description">Перейти назад</string>
+    <string name="state_not_subscribed">Не подписан</string>
+    <string name="state_subscribed">Подписался</string>
+</resources>
