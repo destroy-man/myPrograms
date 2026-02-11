@@ -1,0 +1,8 @@
+package ru.korobeynikov.ch11proxy.withproxy
+
+interface TimetableTrains {
+
+    fun getTimetable(info: String): Array<String>?
+
+    fun getTrainDepartureTime(trainId: String, info: String): String
+}
