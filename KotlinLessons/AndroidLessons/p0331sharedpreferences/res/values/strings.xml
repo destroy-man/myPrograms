@@ -1,5 +1,0 @@
-<resources>
-    <string name="app_name">SharedPreferences</string>
-    <string name="buttonSave">Save</string>
-    <string name="buttonLoad">Load</string>
-</resources>

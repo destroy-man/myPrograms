@@ -1,5 +1,0 @@
-<resources>
-    <string name="app_name">TwoActivityState</string>
-    <string name="activityTwoText">This is Activity Two</string>
-    <string name="gotoActivityTwo">Go to Activity Two</string>
-</resources>
