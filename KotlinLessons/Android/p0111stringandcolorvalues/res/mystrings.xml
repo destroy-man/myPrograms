@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="topText">Верхний текст</string>>
+    <string name="buttonTopText">Верхняя кнопка</string>
+    <string name="bottomText">Нижний текст</string>
+    <string name="buttonBottomText">Нижняя кнопка</string>
+</resources>
