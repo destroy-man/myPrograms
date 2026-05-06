@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">SimpleBrowser</string>
+    <string name="title_activity_browser">MyBrowser</string>
+</resources>
