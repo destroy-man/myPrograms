@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ListHeaderFooter</string>
+    <string name="header_title">Header</string>
+    <string name="footer_title">Footer</string>
+</resources>
