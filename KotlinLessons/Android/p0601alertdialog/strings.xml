@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">AlertDialog</string>
+    <string name="exit">Выход</string>
+    <string name="save_data">Сохранить данные?</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="saved">Сохранено</string>
+</resources>
