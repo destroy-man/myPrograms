@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">WritingAndReadingFiles</string>
+    <string name="write_file_internal">Записать файл во внутреннее хранилище</string>
+    <string name="read_file_internal">Прочесть файл из внутреннего хранилища</string>
+    <string name="write_file_external">Записать файл во внешнее (общедоступное) хранилище</string>
+    <string name="read_file_external">Прочитать файл из внешнего (общедоступного) хранилище</string>
+</resources>
