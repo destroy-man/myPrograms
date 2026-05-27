@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">RequestPermission</string>
+    <string name="request_permission_button_text">Запросить разрешение камеры</string>
+</resources>

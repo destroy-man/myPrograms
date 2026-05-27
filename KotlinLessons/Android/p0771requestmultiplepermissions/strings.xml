@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">RequestMultiplePermissions</string>
+    <string name="request_permissions_button_text">Запросить разрешения</string>
+</resources>
