@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">BroadcastReceiver</string>
+    <string name="charging">Батарея заряжается</string>
+    <string name="not_charging">Батарея не заряжается</string>
+</resources>
