@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Camera</string>
+    <string name="button_text_camera">Разрешить доступ к камере</string>
+</resources>
